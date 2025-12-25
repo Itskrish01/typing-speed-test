@@ -1,12 +1,10 @@
-
+import { Home } from "./components/pages/home"
 
 function App() {
 
   return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
+    <div className="max-w-7xl mx-auto">
+      <Home />
     </div>
   )
 }
