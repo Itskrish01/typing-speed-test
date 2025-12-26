@@ -81,3 +81,62 @@ console.log(sum(5, 3));`,
   }
 }`
 ];
+
+export const CODE_KEYWORDS = {
+    javascript: [
+        "const", "let", "var", "function", "return", "if", "else", "for", "while", "do",
+        "switch", "case", "break", "continue", "default", "try", "catch", "finally",
+        "throw", "new", "this", "super", "class", "extends", "import", "export",
+        "from", "async", "await", "yield", "void", "typeof", "instanceof", "in",
+        "of", "delete", "null", "undefined", "true", "false", "NaN", "Infinity"
+    ],
+    python: [
+        "def", "class", "if", "elif", "else", "for", "while", "break", "continue",
+        "return", "yield", "try", "except", "finally", "raise", "import", "from",
+        "as", "pass", "with", "lambda", "global", "nonlocal", "del", "assert",
+        "True", "False", "None", "and", "or", "not", "is", "in", "async", "await"
+    ],
+    java: [
+        "public", "private", "protected", "static", "final", "void", "int", "double",
+        "float", "boolean", "char", "String", "class", "interface", "extends",
+        "implements", "new", "return", "if", "else", "switch", "case", "break",
+        "default", "for", "while", "do", "try", "catch", "finally", "throw", "throws",
+        "package", "import", "this", "super", "null", "true", "false", "synchronized"
+    ],
+    "c++": [
+        "int", "float", "double", "char", "void", "bool", "class", "struct", "public",
+        "private", "protected", "virtual", "override", "static", "const", "constexpr",
+        "if", "else", "switch", "case", "break", "default", "for", "while", "do",
+        "return", "new", "delete", "try", "catch", "throw", "namespace", "using",
+        "include", "template", "typename", "this", "nullptr", "true", "false", "auto"
+    ],
+    "c#": [
+        "public", "private", "protected", "internal", "static", "readonly", "void",
+        "int", "string", "bool", "class", "interface", "struct", "enum", "namespace",
+        "using", "new", "return", "if", "else", "switch", "case", "break", "default",
+        "for", "foreach", "while", "do", "try", "catch", "finally", "throw", "async",
+        "await", "var", "null", "true", "false", "this", "base", "delegate", "event"
+    ],
+    sql: [
+        "SELECT", "FROM", "WHERE", "INSERT", "INTO", "UPDATE", "SET", "DELETE",
+        "CREATE", "TABLE", "DROP", "ALTER", "INDEX", "VIEW", "JOIN", "INNER",
+        "LEFT", "RIGHT", "FULL", "OUTER", "ON", "GROUP", "BY", "ORDER", "HAVING",
+        "LIMIT", "OFFSET", "DISTINCT", "UNION", "ALL", "VALUES", "NULL", "NOT",
+        "AND", "OR", "IN", "BETWEEN", "LIKE", "AS", "PRIMARY", "KEY", "FOREIGN"
+    ],
+    html: [
+        "html", "head", "body", "title", "meta", "link", "script", "style",
+        "div", "span", "p", "a", "img", "ul", "ol", "li", "table", "tr",
+        "td", "th", "form", "input", "button", "label", "select", "option",
+        "textarea", "h1", "h2", "h3", "h4", "h5", "h6", "header", "footer",
+        "nav", "main", "section", "article", "aside", "canvas", "iframe", "video"
+    ],
+    css: [
+        "color", "background", "margin", "padding", "border", "width", "height",
+        "display", "position", "top", "bottom", "left", "right", "font", "family",
+        "size", "weight", "text", "align", "decoration", "transform", "transition",
+        "animation", "flex", "grid", "gap", "justify", "content", "items", "z-index",
+        "opacity", "overflow", "cursor", "pointer", "hover", "active", "focus",
+        "media", "screen", "min-width", "max-width", "import", "important", "var"
+    ]
+};

@@ -3,12 +3,16 @@ import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
 import { Settings, Check, X } from "lucide-react";
 import { useGameConfig, useGameActions } from "../../store/game-store";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
+
 
 export const ConfigBar = () => {
-    const { difficulty, setDifficulty, mode, setMode, setCustomText, timedDuration, setTimedDuration, category, setCategory } = useGameConfig();
+    const { difficulty, setDifficulty, mode, setMode, setCustomText, timedDuration, setTimedDuration, category, setCategory, language, setLanguage } = useGameConfig();
     const { resetGame } = useGameActions();
     const difficulties = ['easy', 'medium', 'hard', 'custom'] as const;
     const categories = ['words', 'quotes', 'lyrics', 'code'] as const;
+    const languages = ['javascript', 'python', 'java', 'c++', 'c#', 'sql', 'html', 'css'] as const;
     const durations = [15, 30, 60, 120];
     const [isCustomOpen, setIsCustomOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
@@ -50,6 +54,29 @@ export const ConfigBar = () => {
                             </Button>
                         ))}
                     </div>
+
+                    {category === 'code' && (
+                        <>
+                            <div className="h-6 w-px bg-border hidden sm:block" />
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="h-7 sm:h-8 gap-1 transition-all">
+                                        <span className="capitalize">{language}</span>
+                                        <ChevronDown className="w-3 h-3 opacity-50" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuRadioGroup value={language} onValueChange={(val: any) => setLanguage(val)}>
+                                        {languages.map((lang) => (
+                                            <DropdownMenuRadioItem key={lang} value={lang} className="capitalize">
+                                                {lang}
+                                            </DropdownMenuRadioItem>
+                                        ))}
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </>
+                    )}
                 </div>
 
                 <div className="h-6 w-px bg-border hidden sm:block" />

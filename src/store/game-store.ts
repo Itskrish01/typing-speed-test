@@ -19,6 +19,7 @@ import { fireConfetti, fireBaseline } from '../lib/confetti';
 // Types
 export type Mode = 'timed' | 'passage';
 export type Category = 'words' | 'quotes' | 'lyrics' | 'code';
+export type Language = 'javascript' | 'python' | 'java' | 'c++' | 'c#' | 'sql' | 'html' | 'css';
 export type GameStatus = 'ready' | 'active' | 'finished';
 
 interface GameState {
@@ -26,6 +27,7 @@ interface GameState {
     difficulty: Difficulty;
     mode: Mode;
     category: Category;
+    language: Language;
     customText: string;
 
     // Game Status
@@ -64,7 +66,9 @@ interface GameActions {
 
     setDifficulty: (difficulty: Difficulty) => void;
     setMode: (mode: Mode) => void;
+
     setCategory: (category: Category) => void;
+    setLanguage: (language: Language) => void;
     setFocused: (focused: boolean) => void;
     setCustomText: (text: string) => void;
     setTimedDuration: (duration: number) => void;
@@ -93,6 +97,7 @@ const initialState: GameState = {
     difficulty: 'hard',
     mode: 'passage',
     category: 'words',
+    language: 'javascript',
     customText: '',
     status: 'ready',
     isFocused: true,
@@ -146,6 +151,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
         get().initGame();
     },
 
+    setLanguage: (language) => {
+        set({ language });
+        get().initGame();
+    },
+
     setCustomText: (text) => {
         set({ customText: text, difficulty: 'custom', mode: 'passage' });
         get().initGame();
@@ -168,7 +178,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             newText = customText;
         } else {
             // Safe cast as we know difficulty isn't custom here
-            newText = getRandomPassage(difficulty as 'easy' | 'medium' | 'hard', category);
+            newText = getRandomPassage(difficulty as 'easy' | 'medium' | 'hard', category, get().language);
         }
 
         const initialTime = mode === 'timed' ? get().timedDuration : 0;
@@ -321,6 +331,8 @@ export const useGameConfig = () => useGameStore(
         setDifficulty: state.setDifficulty,
         setMode: state.setMode,
         setCategory: state.setCategory,
+        language: state.language,
+        setLanguage: state.setLanguage,
         setCustomText: state.setCustomText,
         timedDuration: state.timedDuration,
         setTimedDuration: state.setTimedDuration,

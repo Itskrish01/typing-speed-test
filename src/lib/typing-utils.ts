@@ -5,7 +5,8 @@ export const calculateWPM = (correctChars: number, timeElapsed: number): number 
     return Math.round(words / minutes);
 };
 
-import { QUOTES, LYRICS, CODE_SNIPPETS } from './data';
+import { QUOTES, LYRICS, CODE_KEYWORDS } from './data';
+export type Language = 'javascript' | 'python' | 'java' | 'c++' | 'c#' | 'sql' | 'html' | 'css';
 
 export const calculateAccuracy = (correctChars: number, totalChars: number): number => {
     if (totalChars === 0) return 100;
@@ -70,7 +71,7 @@ const WORD_COUNTS = {
     hard: 30
 };
 
-export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', category: 'words' | 'quotes' | 'lyrics' | 'code' = 'words'): string => {
+export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', category: 'words' | 'quotes' | 'lyrics' | 'code' = 'words', language: Language = 'javascript'): string => {
     let wordList: string[] = [];
     let count = 0;
 
@@ -85,8 +86,14 @@ export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', categor
     }
 
     if (category === 'code') {
-        const randomIndex = Math.floor(Math.random() * CODE_SNIPPETS.length);
-        return CODE_SNIPPETS[randomIndex];
+        const keywords = CODE_KEYWORDS[language] || CODE_KEYWORDS['javascript'];
+        const numKeywords = 20; // Generate 20 random keywords
+        const selectedKeywords: string[] = [];
+        for (let i = 0; i < numKeywords; i++) {
+            const randomIndex = Math.floor(Math.random() * keywords.length);
+            selectedKeywords.push(keywords[randomIndex]);
+        }
+        return selectedKeywords.join(" ");
     }
 
 
