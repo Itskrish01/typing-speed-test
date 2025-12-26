@@ -3,7 +3,8 @@ import { useAuth } from "../context/auth-context";
 import { getUserProfile } from "../lib/firestore-helpers";
 import { useGameActions } from "../store/game-store";
 import { useTheme } from "./theme-provider";
-import { type StoredBest, type Difficulty } from "../lib/game-types";
+import { EMPTY_PERSONAL_BESTS } from "../lib/game-types";
+import { mapFirestoreBestsToStore } from "../lib/game-helpers";
 
 export const UserDataSync = () => {
     const { user } = useAuth();
@@ -16,13 +17,7 @@ export const UserDataSync = () => {
                 const profile = await getUserProfile(user.uid);
                 if (profile) {
                     if (profile.bestWpm) {
-                        const firestoreBests = profile.bestWpm as Record<string, number>;
-                        const mappedBests: Record<Difficulty, StoredBest | null> = {
-                            easy: firestoreBests.easy ? { wpm: firestoreBests.easy, accuracy: 0, date: new Date().toISOString() } : null,
-                            medium: firestoreBests.medium ? { wpm: firestoreBests.medium, accuracy: 0, date: new Date().toISOString() } : null,
-                            hard: firestoreBests.hard ? { wpm: firestoreBests.hard, accuracy: 0, date: new Date().toISOString() } : null,
-                            custom: null
-                        };
+                        const mappedBests = mapFirestoreBestsToStore(profile.bestWpm as Record<string, number>);
                         setPersonalBests(mappedBests);
                     }
                     if (profile.themePreference) {
@@ -30,15 +25,8 @@ export const UserDataSync = () => {
                     }
                 }
             } else {
-                // Reset to empty/defaults on logout if desired
-                // For now we can keep bests in memory or clear them. 
-                // Clearing them ensures next user doesn't see previous user's bests.
-                setPersonalBests({
-                    easy: null,
-                    medium: null,
-                    hard: null,
-                    custom: null
-                });
+                // Reset to empty/defaults on logout
+                setPersonalBests({ ...EMPTY_PERSONAL_BESTS });
             }
         };
 

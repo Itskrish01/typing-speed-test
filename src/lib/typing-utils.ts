@@ -1,4 +1,5 @@
 import { type StoredBest } from './game-types';
+
 export const calculateWPM = (correctChars: number, timeElapsed: number): number => {
     if (timeElapsed <= 0) return 0;
     const words = correctChars / 5;
@@ -18,6 +19,20 @@ export const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+/**
+ * Returns a random item from an array.
+ */
+const getRandomItem = <T>(array: T[]): T => {
+    return array[Math.floor(Math.random() * array.length)];
+};
+
+/**
+ * Returns multiple random items from an array.
+ */
+const getRandomItems = <T>(array: T[], count: number): T[] => {
+    return Array.from({ length: count }, () => getRandomItem(array));
 };
 
 const EASY_WORDS = [
@@ -67,30 +82,22 @@ const WORD_COUNTS = {
 };
 
 export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', category: 'words' | 'quotes' | 'lyrics' | 'code' = 'words', language: Language = 'javascript'): string => {
-    let wordList: string[] = [];
-    let count = 0;
-
     if (category === 'quotes') {
-        const randomIndex = Math.floor(Math.random() * QUOTES.length);
-        return QUOTES[randomIndex];
+        return getRandomItem(QUOTES);
     }
 
     if (category === 'lyrics') {
-        const randomIndex = Math.floor(Math.random() * LYRICS.length);
-        return LYRICS[randomIndex];
+        return getRandomItem(LYRICS);
     }
 
     if (category === 'code') {
         const keywords = CODE_KEYWORDS[language] || CODE_KEYWORDS['javascript'];
-        const numKeywords = 20; // Generate 20 random keywords
-        const selectedKeywords: string[] = [];
-        for (let i = 0; i < numKeywords; i++) {
-            const randomIndex = Math.floor(Math.random() * keywords.length);
-            selectedKeywords.push(keywords[randomIndex]);
-        }
-        return selectedKeywords.join(" ");
+        return getRandomItems(keywords, 20).join(' ');
     }
 
+
+    let wordList: string[];
+    let count: number;
 
     switch (difficulty) {
         case 'easy':
@@ -110,13 +117,7 @@ export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', categor
             count = 10;
     }
 
-    const words: string[] = [];
-    for (let i = 0; i < count; i++) {
-        const randomIndex = Math.floor(Math.random() * wordList.length);
-        words.push(wordList[randomIndex]);
-    }
-
-    return words.join(" ");
+    return getRandomItems(wordList, count).join(' ');
 };
 
 

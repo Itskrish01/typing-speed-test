@@ -2,16 +2,17 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import {
     calculateWPM,
+    calculateAccuracy,
     getRandomPassage,
     isNewHighScore as checkNewHighScore,
     isFirstTest as checkFirstTest,
 } from '../lib/typing-utils';
 import {
-
     type StoredBest,
-    type Difficulty
+    type Difficulty,
+    EMPTY_PERSONAL_BESTS
 } from '../lib/game-types';
-
+import { countCorrectChars } from '../lib/game-helpers';
 import { fireConfetti, fireBaseline } from '../lib/confetti';
 
 // Types
@@ -112,12 +113,7 @@ const initialState: GameState = {
     accuracy: 100,
     errorCount: 0,
     errorIndices: new Set(),
-    personalBests: {
-        easy: null,
-        medium: null,
-        hard: null,
-        custom: null
-    },
+    personalBests: { ...EMPTY_PERSONAL_BESTS },
     wasNewHighScore: false,
     wasFirstTest: false,
     previousBestWpm: null,
@@ -227,10 +223,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
             const now = Date.now();
             const timeElapsed = Math.max((now - currentStartTime) / 1000, 0.5);
 
-            const correctChars = value.split('').filter((char, i) => char === text[i]).length;
-            const accuracy = value.length > 0
-                ? Math.round(((value.length - currentErrorCount) / value.length) * 100)
-                : 100;
+            const correctChars = countCorrectChars(value, text);
+            const accuracy = calculateAccuracy(value.length - currentErrorCount, value.length);
 
             const newWpm = calculateWPM(correctChars, timeElapsed);
             set({ wpm: newWpm, accuracy });
@@ -265,13 +259,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
             timeElapsed = (endTime - startTime) / 1000;
         }
 
-        const correctChars = userInput.split('').filter((char, i) => char === text[i]).length;
+        const correctChars = countCorrectChars(userInput, text);
         const finalWpm = calculateWPM(correctChars, timeElapsed);
 
         const totalIndicesTyped = userInput.length;
-        const finalAccuracy = totalIndicesTyped > 0
-            ? Math.round(((totalIndicesTyped - errorIndices.size) / totalIndicesTyped) * 100)
-            : 100;
+        const finalAccuracy = calculateAccuracy(totalIndicesTyped - errorIndices.size, totalIndicesTyped);
 
         let isNewHigh = false;
         let isFirst = false;

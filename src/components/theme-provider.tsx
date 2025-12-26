@@ -75,7 +75,6 @@ export function ThemeProvider({
     const value = {
         theme,
         setTheme: (theme: Theme) => {
-            // localStorage.setItem(storageKey, theme) // Removed as per user request
             setTheme(theme)
         },
     }
