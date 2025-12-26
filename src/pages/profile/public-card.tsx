@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getUserProfile, getUserHistory, type UserProfile } from "../../lib/firestore-helpers";
+import { getUserProfile, getUserHistory, getUserProfileByUsername, type UserProfile } from "../../lib/firestore-helpers";
 import { ProfileBanner } from "../../components/ui-blocks/profile-banner";
 import { StatsOverview } from "../../components/ui-blocks/stats-overview";
 
@@ -42,7 +42,7 @@ const formatJoinDate = (profile: UserProfile): string => {
 // ==================== Main Component ====================
 
 export const PublicProfileCard = () => {
-    const { userId } = useParams();
+    const { userId } = useParams(); // This acts as 'identifier' (username OR uid)
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -50,13 +50,30 @@ export const PublicProfileCard = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (userId) {
-                const [profileData, historyData] = await Promise.all([
-                    getUserProfile(userId),
-                    getUserHistory(userId, 500)
-                ]);
-                setProfile(profileData);
-                setHistory(historyData);
-                setLoading(false);
+                setLoading(true);
+                try {
+                    // 1. Try finding by username
+                    let profileData = await getUserProfileByUsername(userId);
+
+                    // 2. If not found, try by UID (backward compatibility)
+                    if (!profileData) {
+                        profileData = await getUserProfile(userId);
+                    }
+
+                    if (profileData) {
+                        setProfile(profileData);
+                        // Fetch history using the resolved UID
+                        const historyData = await getUserHistory(profileData.uid, 500);
+                        setHistory(historyData);
+                    } else {
+                        setProfile(null);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch public profile:", error);
+                    setProfile(null);
+                } finally {
+                    setLoading(false);
+                }
             }
         };
         fetchData();

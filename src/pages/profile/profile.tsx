@@ -6,6 +6,7 @@ import { Header } from "../../components/ui-blocks/header";
 import { Share2, ExternalLink } from "lucide-react";
 import { ActivityHeatmap } from "../../components/ui-blocks/activity-heatmap";
 import { StatsOverview } from "../../components/ui-blocks/stats-overview";
+import { UsernameEditDialog } from "../../components/ui-blocks/username-edit-dialog";
 import { ProfileBanner } from "../../components/ui-blocks/profile-banner";
 
 export const Profile = () => {
@@ -13,6 +14,7 @@ export const Profile = () => {
     const [history, setHistory] = useState<any[]>([]);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,6 +43,11 @@ export const Profile = () => {
     const joinedDate = profile?.createdAt?.toDate ? profile.createdAt.toDate().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Unknown';
     const totalTests = history.length;
 
+    // Check if we should use username in URL (if available) or fallback to ID (though we prefer username now)
+    const publicUrl = profile?.username
+        ? `${window.location.origin}/u/${profile.username}`
+        : `${window.location.origin}/u/${user?.uid}`;
+
     return (
         <PageLayout>
             <Header />
@@ -51,7 +58,21 @@ export const Profile = () => {
                     displayName={displayName}
                     joinedDate={joinedDate}
                     testsCount={totalTests}
+                    onEdit={() => setIsEditOpen(true)}
                 />
+
+                {/* --- Edit Dialog --- */}
+                {user && profile && (
+                    <UsernameEditDialog
+                        open={isEditOpen}
+                        onOpenChange={setIsEditOpen}
+                        currentUsername={profile.username || ''}
+                        userId={user.uid}
+                        onSuccess={(newUsername) => {
+                            setProfile((prev) => prev ? { ...prev, username: newUsername } : null);
+                        }}
+                    />
+                )}
 
                 {/* --- Stats Grid --- */}
                 <StatsOverview history={history} personalBests={profile?.bestWpm} />
@@ -71,8 +92,8 @@ export const Profile = () => {
                 <div className="flex justify-center pt-8 pb-4 opacity-50 hover:opacity-100 transition-opacity">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/10 px-3 py-1.5 rounded-full select-all border border-transparent hover:border-border/20 transition-colors">
                         <Share2 className="w-3 h-3" />
-                        <span>{window.location.origin}/u/{user?.uid}</span>
-                        <a href={`/u/${user?.uid}`} target="_blank" rel="noreferrer" className="hover:text-primary ml-1">
+                        <span>{publicUrl}</span>
+                        <a href={publicUrl} target="_blank" rel="noreferrer" className="hover:text-primary ml-1">
                             <ExternalLink className="w-3 h-3" />
                         </a>
                     </div>

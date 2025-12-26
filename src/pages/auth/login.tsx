@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginWithEmail, signupWithEmail } from "../../lib/auth-helpers";
-import { createUserProfile } from "../../lib/firestore-helpers";
+import { createUserProfile, checkUsernameAvailability } from "../../lib/firestore-helpers";
 import { Button } from "../../components/ui/button";
 import { UserPlus, LogIn, Check, AlertCircle } from "lucide-react";
 
@@ -71,6 +71,7 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -93,14 +94,30 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
         }
 
         setLoading(true);
-        const { user, error: authError } = await signupWithEmail(email, password, username);
 
-        if (authError) {
-            setError(authError);
+        try {
+            // Check availability first
+            const isAvailable = await checkUsernameAvailability(username);
+
+            if (!isAvailable) {
+                setError("Username is already taken.");
+                setLoading(false);
+                return;
+            }
+
+            const { user, error: authError } = await signupWithEmail(email, password, username);
+
+            if (authError) {
+                setError(authError);
+                setLoading(false);
+            } else if (user) {
+                await createUserProfile(user, username);
+                onSuccess();
+            }
+        } catch (err) {
+            console.error(err);
+            setError("Failed to register. Please try again.");
             setLoading(false);
-        } else if (user) {
-            await createUserProfile(user, username);
-            onSuccess();
         }
     };
 

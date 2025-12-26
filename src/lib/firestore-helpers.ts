@@ -103,6 +103,40 @@ export const updateUserTheme = async (userId: string, theme: string) => {
     await setDoc(userRef, { themePreference: theme }, { merge: true });
 };
 
+export const checkUsernameAvailability = async (username: string): Promise<boolean> => {
+    const q = query(
+        collection(db, "users"),
+        where("username", "==", username),
+        limit(1)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.empty;
+};
+
+export const getUserProfileByUsername = async (username: string): Promise<UserProfile | null> => {
+    const q = query(
+        collection(db, "users"),
+        where("username", "==", username),
+        limit(1)
+    );
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+        return snapshot.docs[0].data() as UserProfile;
+    }
+    return null;
+};
+
+export const updateUsername = async (userId: string, newUsername: string) => {
+    // 1. Check strict uniqueness again before writing
+    const isAvailable = await checkUsernameAvailability(newUsername);
+    if (!isAvailable) {
+        throw new Error("Username is already taken");
+    }
+
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, { username: newUsername });
+};
+
 // ------ Test Results & History ------
 
 export const saveTestResult = async (userId: string, result: Omit<TestResult, 'userId' | 'timestamp'>) => {
