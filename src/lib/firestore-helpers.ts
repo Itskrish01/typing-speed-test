@@ -10,7 +10,8 @@ import {
     where,
     orderBy,
     getDocs,
-    limit
+    limit,
+    startAfter
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -168,7 +169,10 @@ export const saveTestResult = async (userId: string, result: Omit<TestResult, 'u
     }
 };
 
+
+
 export const getUserHistory = async (userId: string, limitCount = 50) => {
+    // Keep original for backward compatibility if needed, or redirect to paginated
     const historyRef = collection(db, "history");
     const q = query(
         historyRef,
@@ -179,6 +183,26 @@ export const getUserHistory = async (userId: string, limitCount = 50) => {
 
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const getPaginatedHistory = async (userId: string, limitCount: number, lastDoc: any = null) => {
+    const historyRef = collection(db, "history");
+    let q = query(
+        historyRef,
+        where("userId", "==", userId),
+        orderBy("timestamp", "desc"),
+        limit(limitCount)
+    );
+
+    if (lastDoc) {
+        q = query(q, startAfter(lastDoc));
+    }
+
+    const querySnapshot = await getDocs(q);
+    const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    return { data, lastDoc: lastVisible };
 };
 
 // ------ Public Card Data ------
