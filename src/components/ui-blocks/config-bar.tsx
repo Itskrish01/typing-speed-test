@@ -5,6 +5,7 @@ import { Settings, Check, X } from "lucide-react";
 import { useGameConfig, useGameActions } from "../../store/game-store";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { Textarea } from "../ui/textarea";
 
 
 export const ConfigBar = () => {
@@ -175,7 +176,7 @@ export const ConfigBar = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div
                         ref={dialogRef}
-                        className="w-full max-w-2xl bg-card border border-border rounded-xl shadow-2xl p-6 flex flex-col gap-4 animate-in zoom-in-95 duration-200"
+                        className="w-full max-w-2xl bg-card rounded-xl shadow-2xl p-6 flex flex-col gap-4 animate-in zoom-in-95 duration-200"
                     >
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -187,16 +188,16 @@ export const ConfigBar = () => {
                             </Button>
                         </div>
 
-                        <textarea
+                        <Textarea
                             value={customInput}
                             onChange={(e) => setCustomInput(e.target.value)}
                             placeholder="Paste your text here (max 1000 words)..."
-                            className="w-full h-48 p-4 rounded-lg bg-background border border-input focus:ring-1 focus:ring-primary focus:outline-none resize-none font-mono text-sm leading-relaxed"
+                            className="w-full h-48 p-4 rounded-lg bg-secondary border-none"
                             autoFocus
                         />
 
                         <div className="flex justify-end gap-3">
-                            <Button variant="outline" onClick={() => setIsCustomOpen(false)}>
+                            <Button variant="secondary" onClick={() => setIsCustomOpen(false)}>
                                 Cancel
                             </Button>
                             <Button onClick={handleCustomSubmit} disabled={customInput.trim().length === 0}>

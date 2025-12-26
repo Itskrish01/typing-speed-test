@@ -86,7 +86,7 @@ export const UsernameEditDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] border-none">
                 <DialogHeader>
                     <DialogTitle>Edit Username</DialogTitle>
                     <DialogDescription>
@@ -94,7 +94,7 @@ export const UsernameEditDialog = ({
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    <div className="grid grid-cols-4 items-center gap-2">
                         <Label htmlFor="username" className="text-right">
                             Username
                         </Label>
@@ -107,7 +107,7 @@ export const UsernameEditDialog = ({
                                     setAvailable(null);
                                     setError(null);
                                 }}
-                                className={`pr-10 ${available === true ? "border-green-500/50 focus-visible:ring-green-500/30" : available === false ? "border-red-500/50 focus-visible:ring-red-500/30" : ""}`}
+                                className={`pr-10 border-none ${available === true ? "border-green-500/50 focus-visible:ring-green-500/30" : available === false ? "border-red-500/50 focus-visible:ring-red-500/30" : ""}`}
                                 placeholder="username"
                                 minLength={3}
                                 maxLength={20}
