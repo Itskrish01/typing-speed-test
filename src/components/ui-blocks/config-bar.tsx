@@ -31,7 +31,6 @@ export const ConfigBar = () => {
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 w-full">
                 {/* Difficulty Selector */}
                 <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm text-muted-foreground font-medium hidden sm:inline">Difficulty:</span>
                     <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
                         {difficulties.map((diff) => (
                             <Button
@@ -62,7 +61,6 @@ export const ConfigBar = () => {
 
                 {/* Mode Selector */}
                 <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm text-muted-foreground font-medium hidden sm:inline">Mode:</span>
                     <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
                         <Button
                             variant={mode === 'timed' ? "default" : "ghost"}
