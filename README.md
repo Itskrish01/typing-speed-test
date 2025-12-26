@@ -1,37 +1,80 @@
-# ⌨️ TypeSpeed - Ultimate Typing Test
+# ⌨️ Tapixo
 
-A modern, beautiful, and highly customizable typing speed test application built with **React**, **TypeScript**, and **Tailwind CSS**. Designed to help you improve your typing speed and accuracy with a polished, distraction-free interface.
+> Built for **The FM30 Hackathon Returns**
 
-![TypeSpeed Banner](/public/logo/keyboard.png)
 
-## ✨ Features
+## 📖 The Progress
+
+When I set out to build **Tapixo**, I didn't just want to create another typing test. I wanted to solve a personal frustration: most typing apps are either ugly and dated, or cluttered with ads and distractions.
+
+I wanted something **minimal, beautiful, and blazing fast**. A tool that felt like a premium code editor.
+
+But building a high-performance typing app in React came with its own set of unique engineering challenges. Here is how I learned, built, and overcame them.
+
+---
+
+## 🔧 The Technical Challenges (And How I Solved Them)
+
+### 1. The "Re-render Hell" Problem
+**The Challenge:** In a React application, updating state on every keystroke usually triggers a re-render of the entire component tree. When typing at 100+ WPM, this causes visible lag, making the caret feel "heavy" and unresponsive.
+
+**The Solution:**
+I ditched standard `useState` and React Context for **Zustand**.
+- By using **atomic state management** and `useShallow` selectors, I ensured that only the specific components needing updates (like the current character or the WPM counter) re-render.
+- The caret movement matches your typing speed perfectly, with zero input delay.
+
+### 2. Judging "Strict Accuracy"
+**The Challenge:** Most typing tests forgive you if you backspace and fix a mistake. I wanted to build a tool that encourages *precision*, not just speed-correction spamming.
+
+**The Solution:**
+I implemented a **Strict Accuracy Algorithm**.
+- Instead of just comparing the final string, I track a `Set` of `errorIndices` in the state store.
+- If you type a character wrong *once*, that index is permanently marked as "dirty" for that session.
+- This forces users to slow down and type correctly the first time, which is better for building muscle memory.
+
+### 3. The "Boring UI" Problem
+**The Challenge:** Typing texts are usually white backgrounds with black text. I wanted Tapixo to feel like a personalized environment.
+
+**The Solution:**
+I built a robust **Theming System** using `next-themes` and Tailwind CSS variables.
+- Users can switch instantly between **10+ themes** (like VS Code, Matrix, Sunset, and more).
+- Every part of the UI, from the background to the confetti particles, adapts specifically to the active theme.
+
+---
+
+## ✨ Key Features
 
 ### 🎮 Game Modes
-- **Words Mode**: Practice with a set number of words based on difficulty.
-  - **Easy**: Simple, short lowercase words (e.g., "the", "and").
-  - **Medium**: Technical and common web development terms.
-  - **Hard**: Complex, long technical vocabulary (e.g., "polymorphism", "infrastructure").
-- **Timed Mode**: Test how many words you can type in 60 seconds.
-- **Custom Mode**: Paste your own text to practice specific paragraphs or code snippets.
+*   **Words Mode**: Practice with fixed sets of words (10, 25, 50, 100).
+*   **Timed Mode**: The classic 60-second sprint.
+*   **Custom Mode**: Paste your own text (great for practicing code snippets or specific articles).
+*   **Code Mode**: (Coming Soon) Practice typing actual syntax for JS, Python, and C++.
 
-### 🎨 Stunning Visuals & Themes
-- **10+ Hand-crafted Themes**: Switch instantly between Light, Dark, System, Espresso, Midnight, Forest, Ruby, VS Code, Monochrome, Matrix, and Synthwave.
-- **Smooth Caret**: A beautiful, animated yellow block cursor that glides smoothly across characters.
-- **Smart Focus**: A "Click to Focus" overlay appears when you lose window focus so you never accidentally type into the void.
+### 🧠 Adaptive Difficulty
+*   **Easy**: Common, short words.
+*   **Medium**: Standard vocabulary.
+*   **Hard**: Complex, technical, and long words (e.g., "polymorphism", "infrastructure").
 
-### 📊 Detailed Statistics
-- **Real-time Stats**: Track your WPM (Words Per Minute), Accuracy, and Time remaining/elapsed live as you type.
-- **High Score Tracking**: Automatically saves your personal bests for each difficulty level locally.
-- **Visual Feedback**: Celebratory confetti animations when you break a new record!
-- **Strict Accuracy**: Accuracy is calculated based on characters you've *ever* typed wrong, encouraging precision over speed-correction spamming.
+### 📊 Vital Statistics
+*   Real-time **WPM** & **Accuracy**.
+*   **Personal Bests** saved locally for every difficulty level.
+*   **Visual Feedback**: Celebratory confetti when you break a record!
 
-### 🛠️ Tech Stack
-- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Components**: [shadcn/ui](https://ui.shadcn.com/) + [Lucide Icons](https://lucide.dev/)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Animations**: CSS Transitions + `canvas-confetti`
+### 🎨 10+ Hand-Crafted Themes
+Includes Light, Dark, Espresso, Midnight, Forest, Ruby, Synthwave, and more.
+
+---
+
+## 🛠️ Tech Stack
+
+*   **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
+*   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+*   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+*   **UI Components**: [shadcn/ui](https://ui.shadcn.com/) + [Lucide Icons](https://lucide.dev/)
+*   **Animations**: CSS Transitions + `canvas-confetti`
+
+---
 
 ## 🚀 Getting Started
 
@@ -56,14 +99,14 @@ A modern, beautiful, and highly customizable typing speed test application built
     npm run build
     ```
 
-## 🎯 How to Play
-1.  **Select Difficulty**: Choose between Easy, Medium, or Hard (or Custom).
-2.  **Select Mode**: Toggle between "Words" (fixed count) or "Timed" (60s).
-3.  **Start Typing**: The test begins automatically when you type the first character.
-4.  **Restart**: Press `Tab` to quickly restart the test at any time.
+---
 
-## 🤝 Contributing
-Contributions are welcome! Feel free to open issues or submit pull requests to improve the app.
+## 🤝 Future Roadmap
+
+*   [ ] **Multiplayer Race Mode**: Compete against friends in real-time.
+*   [ ] **Cloud Sync**: Save your history and stats across devices (Firebase integration started).
+*   [ ] **Heatmap**: Visualizing daily typing activity.
 
 ---
+
 *Built with ❤️ by itsKrish01*
