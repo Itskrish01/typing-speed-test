@@ -1,32 +1,87 @@
-import { Trophy } from "lucide-react";
+import { Trophy, ChevronDown } from "lucide-react";
+import { ModeToggle } from "../mode-toggle";
+import { usePersonalBests, useGameConfig } from "../../store/game-store";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
 
 export const Header = () => {
+    const { difficulty } = useGameConfig();
+    const personalBests = usePersonalBests();
+
+    const currentBest = difficulty !== 'custom' ? personalBests[difficulty]?.wpm || 0 : 0;
+
     return (
-        <header className="w-full py-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-                <div className="relative">
+        <header className="w-full flex items-center justify-between pb-4 sm:pb-8 pt-4">
+            {/* Title Area */}
+            <div className="flex flex-col gap-1 items-start text-left">
+                <div className="flex items-center gap-3">
+                    {/* Logo Image */}
                     <img
                         src="/logo/keyboard.png"
-                        className="relative w-12 h-12 object-contain"
-                        alt="Typing Speed Test Logo"
+                        alt="Logo"
+                        className="w-8 h-8 sm:w-8 sm:h-8 object-contain"
                     />
-                </div>
-                <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+
+                    {/* Title - Hidden on mobile, visible on sm+ */}
+                    <h1 className="hidden sm:block text-2xl font-bold tracking-tight text-foreground">
                         Typing Speed Test
                     </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Type as fast as you can in 60 seconds
-                    </p>
                 </div>
+                {/* Subtitle - Hidden on mobile */}
+                <p className="text-sm text-muted-foreground hidden sm:block">
+                    Check your typing skills in a minute
+                </p>
             </div>
 
-            <div className="flex items-center gap-2 bg-secondary/50 px-4 py-2 rounded-full border border-border/50 backdrop-blur-sm">
-                <Trophy className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-secondary-foreground">
-                    Personal Best: <span className="font-bold">0</span>
-                </span>
+            {/* Right side controls */}
+            <div className="flex items-center gap-2 sm:gap-6">
+                {/* Personal Best Dropdown */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="flex items-center gap-2 group px-2 h-10 hover:bg-secondary/50">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
+                                <Trophy className="w-4 h-4" />
+                            </div>
+                            <div className="flex flex-col items-start gap-0.5 text-right hidden sm:flex">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground leading-none whitespace-nowrap">Personal Best</span>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-base font-bold tabular-nums leading-none">
+                                        {currentBest} wpm
+                                    </span>
+                                    <ChevronDown className="w-3 h-3 text-muted-foreground opacity-50" />
+                                </div>
+                            </div>
+                            {/* Mobile only WPM display */}
+                            <span className="sm:hidden text-sm font-bold tabular-nums leading-none">
+                                {currentBest}
+                            </span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem className="flex justify-between cursor-default">
+                            <span className="font-medium text-chart-2">Easy</span>
+                            <span className="font-bold">{personalBests.easy?.wpm || 0} wpm</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex justify-between cursor-default">
+                            <span className="font-medium text-chart-3">Medium</span>
+                            <span className="font-bold">{personalBests.medium?.wpm || 0} wpm</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex justify-between cursor-default">
+                            <span className="font-medium text-destructive">Hard</span>
+                            <span className="font-bold">{personalBests.hard?.wpm || 0} wpm</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <div className="w-px h-8 bg-border hidden sm:block" />
+
+                <ModeToggle />
             </div>
         </header>
-    )
-}
+    );
+};

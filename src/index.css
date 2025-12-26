@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -45,10 +45,13 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-google-sans: 'Google Sans', sans-serif;
+  --font-roboto-mono: 'Roboto Mono', monospace;
 }
 
 :root {
   --radius: 0.625rem;
+
+  /* Light Theme (Clean) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -64,25 +67,19 @@
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
+  /* Standard Red */
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
+  /* Standard Green */
   --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  /* Caret */
 }
 
-.dark {
+/* Dark Theme */
+.dark,
+[data-theme="dark"] {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
@@ -97,23 +94,257 @@
   --muted-foreground: oklch(0.705 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(0.65 0.2 25);
+  /* Vibrant Red for dark mode */
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  --chart-2: oklch(0.7 0.16 150);
+  /* Vibrant Green */
+  --chart-3: oklch(0.85 0.18 85);
+  /* Yellow/Gold Caret */
+}
+
+/* Espresso: Warm Browns */
+[data-theme="espresso"] {
+  --background: oklch(0.18 0.02 65);
+  --foreground: oklch(0.95 0.01 70);
+  --card: oklch(0.22 0.02 65);
+  --card-foreground: oklch(0.95 0.01 70);
+  --popover: oklch(0.22 0.02 65);
+  --popover-foreground: oklch(0.95 0.01 70);
+  --primary: oklch(0.85 0.1 75);
+  --primary-foreground: oklch(0.2 0.02 65);
+  --secondary: oklch(0.28 0.03 65);
+  --secondary-foreground: oklch(0.95 0.01 70);
+  --muted: oklch(0.28 0.03 65);
+  --muted-foreground: oklch(0.7 0.04 70);
+  --accent: oklch(0.28 0.03 65);
+  --accent-foreground: oklch(0.95 0.01 70);
+  --destructive: oklch(0.65 0.15 30);
+  /* Terracotta Red */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.85 0.1 75);
+  --chart-2: oklch(0.75 0.14 110);
+  /* Olive/Matcha Green - Harmonious */
+  --chart-3: oklch(0.9 0.15 80);
+  /* Cream/Gold */
+}
+
+/* Midnight: Deep Blues */
+[data-theme="midnight"] {
+  --background: oklch(0.1 0.05 260);
+  --foreground: oklch(0.9 0.02 260);
+  --card: oklch(0.15 0.05 260);
+  --card-foreground: oklch(0.9 0.02 260);
+  --popover: oklch(0.15 0.05 260);
+  --popover-foreground: oklch(0.9 0.02 260);
+  --primary: oklch(0.8 0.15 230);
+  --primary-foreground: oklch(0.1 0.05 260);
+  --secondary: oklch(0.25 0.05 260);
+  --secondary-foreground: oklch(0.95 0 0);
+  --muted: oklch(0.2 0.05 260);
+  --muted-foreground: oklch(0.6 0.05 260);
+  --accent: oklch(0.2 0.05 260);
+  --accent-foreground: oklch(0.95 0 0);
+  --destructive: oklch(0.65 0.2 340);
+  /* Magenta/Pinkish Red */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.8 0.15 230);
+  --chart-2: oklch(0.7 0.18 190);
+  /* Cyan/Teal Green */
+  --chart-3: oklch(0.8 0.2 290);
+  /* Purple Caret */
+}
+
+/* Forest: Deep Greens */
+[data-theme="forest"] {
+  --background: oklch(0.12 0.04 150);
+  --foreground: oklch(0.95 0.01 150);
+  --card: oklch(0.18 0.04 150);
+  --card-foreground: oklch(0.95 0.01 150);
+  --popover: oklch(0.18 0.04 150);
+  --popover-foreground: oklch(0.95 0.01 150);
+  --primary: oklch(0.85 0.15 140);
+  --primary-foreground: oklch(0.12 0.04 150);
+  --secondary: oklch(0.22 0.04 150);
+  --secondary-foreground: oklch(0.95 0.01 150);
+  --muted: oklch(0.22 0.04 150);
+  --muted-foreground: oklch(0.7 0.04 150);
+  --accent: oklch(0.22 0.04 150);
+  --accent-foreground: oklch(0.95 0.01 150);
+  --destructive: oklch(0.7 0.18 20);
+  /* Rust Red */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.85 0.15 140);
+  --chart-2: oklch(0.8 0.15 140);
+  /* Mint/Bright Green */
+  --chart-3: oklch(0.9 0.1 100);
+  /* Light Yellow */
+}
+
+/* Ruby: Dark Reds */
+[data-theme="ruby"] {
+  --background: oklch(0.15 0.05 0);
+  --foreground: oklch(0.95 0.01 0);
+  --card: oklch(0.2 0.05 0);
+  --card-foreground: oklch(0.95 0.01 0);
+  --popover: oklch(0.2 0.05 0);
+  --popover-foreground: oklch(0.95 0.01 0);
+  --primary: oklch(0.75 0.2 20);
+  --primary-foreground: oklch(0.15 0.05 0);
+  --secondary: oklch(0.25 0.05 0);
+  --secondary-foreground: oklch(0.95 0.01 0);
+  --muted: oklch(0.25 0.05 0);
+  --muted-foreground: oklch(0.7 0.05 0);
+  --accent: oklch(0.25 0.05 0);
+  --accent-foreground: oklch(0.95 0.01 0);
+  --destructive: oklch(0.6 0.15 0);
+  /* Dark Crimson */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.75 0.2 20);
+  --chart-2: oklch(0.8 0.15 120);
+  /* Pale Green - High Contrast against red */
+  --chart-3: oklch(0.9 0.15 50);
+  /* Orange/Gold */
+}
+
+/* VS Code: Dark+ */
+[data-theme="vscode"] {
+  --background: oklch(0.18 0.01 260);
+  /* #1e1e1e */
+  --foreground: oklch(0.85 0.01 260);
+  /* #d4d4d4 */
+  --card: oklch(0.22 0.01 260);
+  --card-foreground: oklch(0.85 0.01 260);
+  --popover: oklch(0.16 0.01 260);
+  /* #252526 */
+  --popover-foreground: oklch(0.85 0.01 260);
+  --primary: oklch(0.6 0.15 250);
+  /* #007acc Blue */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.25 0.01 260);
+  --secondary-foreground: oklch(0.85 0.01 260);
+  --muted: oklch(0.25 0.01 260);
+  --muted-foreground: oklch(0.6 0.01 260);
+  --accent: oklch(0.25 0.01 260);
+  --accent-foreground: oklch(0.85 0.01 260);
+  --destructive: oklch(0.6 0.18 20);
+  /* Error Red */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.6 0.15 250);
+  --chart-2: oklch(0.7 0.12 140);
+  /* VS Code String Green */
+  --chart-3: oklch(0.85 0.15 80);
+  /* Yellow Cursor */
+}
+
+/* Monochrome: Black & White (OLED) */
+[data-theme="monochrome"] {
+  --background: oklch(0 0 0);
+  /* Pure Black */
+  --foreground: oklch(1 0 0);
+  /* Pure White */
+  --card: oklch(0.1 0 0);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.1 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.2 0 0);
+  --muted-foreground: oklch(0.6 0 0);
+  --accent: oklch(0.2 0 0);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.7 0.25 0);
+  /* Vivid Red for contrast - OR keep B&W? User asked for "Black and white only" but maybe errors need to show? Usually errors are still distinct. */
+  --border: oklch(0.3 0 0);
+  --input: oklch(0.3 0 0);
+  --ring: oklch(1 0 0);
+  --chart-2: oklch(0.8 0 0);
+  /* Light Grey for 'Correct' ? Or keep green? "Monochrome" usually implies grayscale. I will make correct = White/Grey, Error = Grey with Strikethrough? 
+  Actually, let's keep it clean: Correct = White, Incorrect = Dark Grey or just default Red for usability. 
+  I'll use a very pale Greyish for correct and a stark White for Caret. */
+  --chart-2: oklch(0.6 0 0);
+  /* Grey for Correct text (less distraction) */
+  --destructive: oklch(0.4 0 0);
+  /* Darker Grey used for errors? No, errors need to be seen. I'll make errors underlined. But color-wise: 
+  Let's use slight tint for Monochrome but mostly value differences. */
+  --chart-2: oklch(0.8 0 0);
+  /* Light Grey */
+  --destructive: oklch(0.5 0 0);
+  /* Mid Grey */
+  --chart-3: oklch(1 0 0);
+  /* White Caret */
+}
+
+/* Matrix: Black & Green */
+[data-theme="matrix"] {
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.8 0.2 145);
+  /* Terminal Green */
+  --card: oklch(0.05 0.05 145);
+  --card-foreground: oklch(0.8 0.2 145);
+  --popover: oklch(0.05 0.05 145);
+  --popover-foreground: oklch(0.8 0.2 145);
+  --primary: oklch(0.6 0.2 145);
+  /* Darker Green */
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.1 0.1 145);
+  --secondary-foreground: oklch(0.8 0.2 145);
+  --muted: oklch(0.1 0.1 145);
+  --muted-foreground: oklch(0.5 0.15 145);
+  --accent: oklch(0.1 0.1 145);
+  --accent-foreground: oklch(0.8 0.2 145);
+  --destructive: oklch(0.6 0.2 25);
+  /* Red glitch? */
+  --border: oklch(0.6 0.2 145 / 30%);
+  --input: oklch(0.6 0.2 145 / 30%);
+  --ring: oklch(0.8 0.2 145);
+  --chart-2: oklch(0.9 0.1 145);
+  /* Bright Green */
+  --destructive: oklch(0.6 0.18 20);
+  /* Red ensures visibility of errors */
+  --chart-3: oklch(0.8 0.2 145);
+  /* Green Block Cursor */
+}
+
+/* Synthwave: Neon Purple/Pink */
+[data-theme="synthwave"] {
+  --background: oklch(0.15 0.1 290);
+  /* Deep Purple */
+  --foreground: oklch(0.9 0.1 320);
+  /* Neon Pinkish text */
+  --card: oklch(0.2 0.1 290);
+  --card-foreground: oklch(0.9 0.1 320);
+  --popover: oklch(0.2 0.1 290);
+  --popover-foreground: oklch(0.9 0.1 320);
+  --primary: oklch(0.7 0.2 320);
+  /* Hot Pink */
+  --primary-foreground: oklch(1 1 0);
+  /* Yellow? */
+  --primary-foreground: oklch(0.1 0.1 290);
+  --secondary: oklch(0.3 0.1 290);
+  --secondary-foreground: oklch(0.9 0.1 320);
+  --muted: oklch(0.3 0.1 290);
+  --muted-foreground: oklch(0.6 0.1 290);
+  --accent: oklch(0.3 0.1 290);
+  --accent-foreground: oklch(0.9 0.1 320);
+  --destructive: oklch(0.6 0.2 20);
+  /* Red */
+  --border: oklch(0.8 0.2 320 / 30%);
+  --input: oklch(0.8 0.2 320 / 30%);
+  --ring: oklch(0.7 0.2 320);
+  --chart-2: oklch(0.8 0.2 160);
+  /* Neon Green */
+  --chart-3: oklch(0.8 0.2 200);
+  /* Cyan Cursor */
 }
 
 @layer base {
@@ -122,6 +353,6 @@
   }
 
   body {
-    @apply bg-background text-foreground font-google-sans;
+    @apply bg-background text-foreground font-roboto-mono;
   }
 }

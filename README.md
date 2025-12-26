@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# ⌨️ TypeSpeed - Ultimate Typing Test
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, beautiful, and highly customizable typing speed test application built with **React**, **TypeScript**, and **Tailwind CSS**. Designed to help you improve your typing speed and accuracy with a polished, distraction-free interface.
 
-Currently, two official plugins are available:
+![TypeSpeed Banner](/public/logo/keyboard.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+### 🎮 Game Modes
+- **Words Mode**: Practice with a set number of words based on difficulty.
+  - **Easy**: Simple, short lowercase words (e.g., "the", "and").
+  - **Medium**: Technical and common web development terms.
+  - **Hard**: Complex, long technical vocabulary (e.g., "polymorphism", "infrastructure").
+- **Timed Mode**: Test how many words you can type in 60 seconds.
+- **Custom Mode**: Paste your own text to practice specific paragraphs or code snippets.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### 🎨 Stunning Visuals & Themes
+- **10+ Hand-crafted Themes**: Switch instantly between Light, Dark, System, Espresso, Midnight, Forest, Ruby, VS Code, Monochrome, Matrix, and Synthwave.
+- **Smooth Caret**: A beautiful, animated yellow block cursor that glides smoothly across characters.
+- **Smart Focus**: A "Click to Focus" overlay appears when you lose window focus so you never accidentally type into the void.
 
-## Expanding the ESLint configuration
+### 📊 Detailed Statistics
+- **Real-time Stats**: Track your WPM (Words Per Minute), Accuracy, and Time remaining/elapsed live as you type.
+- **High Score Tracking**: Automatically saves your personal bests for each difficulty level locally.
+- **Visual Feedback**: Celebratory confetti animations when you break a new record!
+- **Strict Accuracy**: Accuracy is calculated based on characters you've *ever* typed wrong, encouraging precision over speed-correction spamming.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🛠️ Tech Stack
+- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Components**: [shadcn/ui](https://ui.shadcn.com/) + [Lucide Icons](https://lucide.dev/)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Animations**: CSS Transitions + `canvas-confetti`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/itskrish01/typing-speed-test.git
+    cd typing-speed-test
+    ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+4.  **Build for production**
+    ```bash
+    npm run build
+    ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🎯 How to Play
+1.  **Select Difficulty**: Choose between Easy, Medium, or Hard (or Custom).
+2.  **Select Mode**: Toggle between "Words" (fixed count) or "Timed" (60s).
+3.  **Start Typing**: The test begins automatically when you type the first character.
+4.  **Restart**: Press `Tab` to quickly restart the test at any time.
+
+## 🤝 Contributing
+Contributions are welcome! Feel free to open issues or submit pull requests to improve the app.
+
+---
+*Built with ❤️ by itsKrish01*
