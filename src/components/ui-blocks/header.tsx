@@ -26,7 +26,7 @@ export const Header = () => {
 
                     {/* Title - Hidden on mobile, visible on sm+ */}
                     <h1 className="hidden sm:block text-2xl font-bold tracking-tight text-foreground">
-                        Typing Speed Test
+                        Tapixo
                     </h1>
                 </div>
                 {/* Subtitle - Hidden on mobile */}
