@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import {
     calculateWPM,
-    calculateAccuracy,
+
     getRandomPassage
 } from '../lib/typing-utils';
 import {
-    getStoredBest,
+
     getAllStoredBests,
     setStoredBest,
     isNewHighScore as checkNewHighScore,
@@ -40,6 +40,7 @@ interface GameState {
     timeLeft: number;
     timerCount: number;
     initialTime: number;
+    timedDuration: number;
 
     // Stats
     wpm: number;
@@ -62,6 +63,7 @@ interface GameActions {
     setMode: (mode: Mode) => void;
     setFocused: (focused: boolean) => void;
     setCustomText: (text: string) => void;
+    setTimedDuration: (duration: number) => void;
 
     // Game Flow
     initGame: () => void;
@@ -81,6 +83,7 @@ interface GameActions {
 type GameStore = GameState & GameActions;
 
 const DEFAULT_TIME = 60;
+const DEFAULT_DURATION = 60;
 
 const initialState: GameState = {
     difficulty: 'hard',
@@ -94,6 +97,7 @@ const initialState: GameState = {
     userInput: '',
     timeLeft: DEFAULT_TIME,
     initialTime: DEFAULT_TIME,
+    timedDuration: DEFAULT_DURATION,
     timerCount: 0,
     wpm: 0,
     accuracy: 100,
@@ -118,8 +122,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
         get().initGame();
     },
 
+    setTimedDuration: (duration) => {
+        set({ timedDuration: duration });
+        if (get().mode === 'timed') {
+            get().initGame();
+        }
+    },
+
     setMode: (mode) => {
-        const initialTime = mode === 'timed' ? DEFAULT_TIME : 0;
+        const { timedDuration } = get();
+        const initialTime = mode === 'timed' ? timedDuration : 0;
         set({ mode, initialTime, timeLeft: initialTime });
         get().initGame();
     },
@@ -149,7 +161,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             newText = getRandomPassage(difficulty as 'easy' | 'medium' | 'hard');
         }
 
-        const initialTime = mode === 'timed' ? DEFAULT_TIME : 0;
+        const initialTime = mode === 'timed' ? get().timedDuration : 0;
 
         set({
             text: newText,
@@ -298,6 +310,8 @@ export const useGameConfig = () => useGameStore(
         setDifficulty: state.setDifficulty,
         setMode: state.setMode,
         setCustomText: state.setCustomText,
+        timedDuration: state.timedDuration,
+        setTimedDuration: state.setTimedDuration,
     }))
 );
 

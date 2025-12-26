@@ -5,9 +5,10 @@ import { Settings, Check, X } from "lucide-react";
 import { useGameConfig, useGameActions } from "../../store/game-store";
 
 export const ConfigBar = () => {
-    const { difficulty, setDifficulty, mode, setMode, setCustomText } = useGameConfig();
+    const { difficulty, setDifficulty, mode, setMode, setCustomText, timedDuration, setTimedDuration } = useGameConfig();
     const { resetGame } = useGameActions();
     const difficulties = ['easy', 'medium', 'hard', 'custom'] as const;
+    const durations = [15, 30, 60, 120];
     const [isCustomOpen, setIsCustomOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
     const dialogRef = useRef<HTMLDivElement>(null);
@@ -92,6 +93,30 @@ export const ConfigBar = () => {
                             Words
                         </Button>
                     </div>
+
+                    {mode === 'timed' && (
+                        <>
+                            <div className="h-6 w-px bg-border hidden sm:block" />
+                            <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                                {durations.map((duration) => (
+                                    <Button
+                                        key={duration}
+                                        variant={timedDuration === duration ? "default" : "ghost"}
+                                        size="sm"
+                                        onClick={() => setTimedDuration(duration)}
+                                        className={cn(
+                                            "h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0 min-w-[3rem]",
+                                            timedDuration === duration
+                                                ? "shadow-md bg-primary text-primary-foreground"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                        )}
+                                    >
+                                        {duration}s
+                                    </Button>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
