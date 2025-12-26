@@ -105,7 +105,7 @@ export const TypingArea = ({
                 {/* Smooth Caret - Block Style */}
                 <div
                     className={cn(
-                        "absolute bg-chart-3/50 rounded-sm z-0 transition-all duration-100 ease-out", // Added opacity/50 to seeing text through if needed, or z-0 to be behind
+                        "absolute bg-secondary rounded-sm z-0 transition-all duration-100 ease-out", // Added opacity/50 to seeing text through if needed, or z-0 to be behind
                         showCaret ? "opacity-100" : "opacity-0",
                         isReady && userInput.length === 0 && "animate-pulse" // Pulse initially
                     )}
