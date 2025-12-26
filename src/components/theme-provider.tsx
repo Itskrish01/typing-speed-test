@@ -39,7 +39,11 @@ export function ThemeProvider({
     defaultTheme = "system",
 }: ThemeProviderProps) {
     const [theme, setTheme] = useState<Theme>(
-        () => defaultTheme
+        () => {
+            // Try to read from localStorage for non-logged-in users
+            const storedTheme = localStorage.getItem("theme") as Theme | null
+            return storedTheme || defaultTheme
+        }
     )
 
     useEffect(() => {

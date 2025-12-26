@@ -19,6 +19,9 @@ export function ModeToggle() {
         setTheme(newTheme)
         if (user) {
             updateUserTheme(user.uid, newTheme)
+        } else {
+            // Save to localStorage for non-logged-in users
+            localStorage.setItem("theme", newTheme)
         }
     }
 
