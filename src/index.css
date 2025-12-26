@@ -60,7 +60,7 @@
   --popover-foreground: oklch(0.141 0.005 285.823);
   --primary: oklch(0.21 0.006 285.885);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
+  --secondary: oklch(82.344% 0.00009 271.152);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
@@ -88,7 +88,7 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.92 0.004 286.32);
   --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
+  --secondary: oklch(30.919% 0.00004 271.152);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
   --muted-foreground: oklch(0.705 0.015 286.067);
@@ -169,7 +169,7 @@
   --popover-foreground: oklch(0.95 0.01 150);
   --primary: oklch(0.85 0.15 140);
   --primary-foreground: oklch(0.12 0.04 150);
-  --secondary: oklch(0.22 0.04 150);
+  --secondary: oklch(27.744% 0.05909 148.511);
   --secondary-foreground: oklch(0.95 0.01 150);
   --muted: oklch(0.22 0.04 150);
   --muted-foreground: oklch(0.7 0.04 150);
@@ -227,7 +227,7 @@
   --primary: oklch(0.6 0.15 250);
   /* #007acc Blue */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.25 0.01 260);
+  --secondary: oklch(35.116% 0.01713 262.301);
   --secondary-foreground: oklch(0.85 0.01 260);
   --muted: oklch(0.25 0.01 260);
   --muted-foreground: oklch(0.6 0.01 260);
@@ -296,7 +296,7 @@
   --primary: oklch(0.6 0.2 145);
   /* Darker Green */
   --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.1 0.1 145);
+  --secondary: oklch(41.757% 0.14208 142.511);
   --secondary-foreground: oklch(0.8 0.2 145);
   --muted: oklch(0.1 0.1 145);
   --muted-foreground: oklch(0.5 0.15 145);
@@ -330,7 +330,7 @@
   --primary-foreground: oklch(1 1 0);
   /* Yellow? */
   --primary-foreground: oklch(0.1 0.1 290);
-  --secondary: oklch(0.3 0.1 290);
+  --secondary: oklch(35.23% 0.11551 289.669);
   --secondary-foreground: oklch(0.9 0.1 320);
   --muted: oklch(0.3 0.1 290);
   --muted-foreground: oklch(0.6 0.1 290);

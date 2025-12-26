@@ -85,8 +85,13 @@ export const PublicProfileCard = () => {
     const displayName = getDisplayName(profile);
     const joinDate = formatJoinDate(profile);
 
+    // Determine theme class for Tailwind dark mode
+    const DARK_THEMES = ["dark", "espresso", "midnight", "forest", "ruby", "vscode", "monochrome", "matrix", "synthwave"];
+    const userTheme = profile.themePreference || "dark";
+    const isDark = DARK_THEMES.includes(userTheme);
+
     return (
-        <div className={profile.themePreference === 'dark' ? 'dark' : ''}>
+        <div className={isDark ? "dark" : ""} data-theme={userTheme}>
             <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8 selection:bg-primary/30 selection:text-primary-foreground">
 
                 <div className="max-w-7xl mx-auto space-y-6">
