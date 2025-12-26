@@ -86,7 +86,7 @@ export const TypingArea = ({
                         onFocus?.();
                     }}
                 >
-                    <div className="flex items-center gap-2 text-muted-foreground animate-pulse">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                         <MousePointer className="w-4 h-4" />
                         <span className="text-lg font-mono font-bold">Click here or press any key to focus</span>
                     </div>
@@ -97,8 +97,8 @@ export const TypingArea = ({
             <div
                 ref={containerRef}
                 className={cn(
-                    "relative text-xl sm:text-2xl md:text-3xl leading-relaxed tracking-wide font-medium text-muted-foreground break-words whitespace-pre-wrap select-none transition-all duration-300 font-roboto-mono",
-                    showOverlay && "blur-[8px] opacity-40",
+                    "relative text-xl sm:text-2xl md:text-3xl leading-relaxed tracking-wide font-medium text-muted-foreground wrap-break-word whitespace-pre-wrap select-none transition-all duration-300 font-roboto-mono",
+                    showOverlay && "blur-sm opacity-40",
                     className
                 )}
             >

@@ -1,3 +1,4 @@
+import { type StoredBest } from './game-types';
 export const calculateWPM = (correctChars: number, timeElapsed: number): number => {
     if (timeElapsed <= 0) return 0;
     const words = correctChars / 5;
@@ -33,36 +34,30 @@ const EASY_WORDS = [
 ];
 
 const MEDIUM_WORDS = [
-    "program", "syntax", "value", "method", "variable", "network", "server",
-    "client", "browser", "script", "update", "function", "object", "array",
-    "string", "number", "boolean", "design", "style", "layout", "format",
-    "pixel", "color", "image", "audio", "video", "render", "state", "props",
-    "hook", "effect", "action", "store", "global", "local", "memory", "data",
-    "cloud", "build", "deploy", "debug", "error", "warning", "trace", "stack",
-    "queue", "list", "map", "set", "graph", "tree", "node", "root", "leaf",
-    "search", "sort", "merge", "split", "slice", "splice", "join", "concat",
-    "match", "test", "case", "suite", "bench", "mark", "tool", "chain", "core",
-    "utils", "helper", "class", "module", "import", "export", "default", "const",
-    "let", "var", "async", "await", "promise", "yield", "return", "throw", "catch",
-    "try", "while", "break", "switch", "binary", "system", "kernel", "shell"
+    "about", "above", "across", "action", "almost", "alone", "along", "already",
+    "always", "amount", "answer", "anyone", "appear", "around", "arrive", "artist",
+    "aspect", "assume", "attack", "author", "become", "before", "behind", "better",
+    "between", "beyond", "billion", "bottle", "bottom", "bought", "branch", "breath",
+    "bridge", "bright", "broken", "budget", "burden", "bureau", "button", "camera",
+    "campaign", "cancer", "cannot", "carbon", "career", "castle", "casual", "caught",
+    "center", "chance", "change", "charge", "choice", "choose", "church", "circle",
+    "client", "closed", "closer", "coffee", "column", "combat", "coming", "common",
+    "company", "compare", "concept", "concern", "concert", "corner", "costume", "cottage"
 ];
 
 const HARD_WORDS = [
-    "synchronization", "asynchronous", "multithreading", "concurrency", "parallelism",
-    "polymorphism", "encapsulation", "inheritance", "abstraction", "implementation",
-    "dependency", "injection", "middleware", "authentication", "authorization",
-    "encryption", "decryption", "cryptography", "blockchain", "decentralized",
-    "distributed", "system", "architecture", "infrastructure", "deployment",
-    "orchestration", "virtualization", "containerization", "microservices", "serverless",
-    "scalability", "reliability", "availability", "maintainability", "testability",
-    "observability", "metrics", "analytics", "visualization", "optimization",
-    "performance", "latency", "throughput", "bandwidth", "protocol", "interface",
-    "declaration", "definition", "expression", "statement", "identifier", "literal",
-    "operator", "precedence", "associativity", "evaluation", "compilation",
-    "interpretation", "execution", "runtime", "environment", "framework", "library",
-    "component", "directive", "decorator", "annotation", "configuration", "manifest",
-    "specification", "standardization", "normalization", "serialization", "deserialization",
-    "idempotency", "immutability", "referential", "transparency", "functional"
+    "absolutely", "according", "activity", "actually", "addition", "administration",
+    "adventure", "advertising", "afternoon", "agreement", "agriculture", "although",
+    "analysis", "announce", "anything", "anywhere", "apartment", "apparent", "appearance",
+    "approach", "appropriate", "approval", "argument", "arrangement", "association",
+    "atmosphere", "attitude", "audience", "authority", "available", "background",
+    "beautiful", "beginning", "behavior", "believe", "birthday", "boundary", "breakfast",
+    "breathing", "building", "business", "calculate", "capacity", "category", "certainly",
+    "campaign", "candidate", "capacity", "carefully", "category", "celebrate", "century",
+    "ceremony", "chairman", "champion", "changing", "chemical", "children", "civilian",
+    "clothing", "collapse", "colleague", "collect", "collection", "college", "combination",
+    "commercial", "commission", "commitment", "committee", "communicate", "community",
+    "comparison", "competition", "complaint", "complete", "completely", "complex", "computer"
 ];
 
 const WORD_COUNTS = {
@@ -122,4 +117,14 @@ export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', categor
     }
 
     return words.join(" ");
+};
+
+
+export const isNewHighScore = (wpm: number, currentBest: StoredBest | null): boolean => {
+    if (!currentBest) return true;
+    return wpm > currentBest.wpm;
+};
+
+export const isFirstTest = (currentBest: StoredBest | null): boolean => {
+    return currentBest === null;
 };

@@ -1,25 +1,29 @@
 import { useEffect, useRef } from "react";
-import { PageLayout } from "../layout/page-layout";
-import { Header } from "../ui-blocks/header";
-import { StatsBar } from "../ui-blocks/stats-bar";
-import { ConfigBar } from "../ui-blocks/config-bar";
-import { TypingArea } from "../ui-blocks/typing-area";
-import { ResultsView } from "../ui-blocks/results-view";
-import { Button } from "../ui/button";
+import { useAuth } from "../../context/auth-context";
+import { saveTestResult } from "../../lib/firestore-helpers";
+
 import { RotateCcw } from "lucide-react";
 import {
     useGameStatus,
     useGameText,
     useGameResultData,
     useGameActions,
+    useGameConfig,
 } from "../../store/game-store";
+import { PageLayout } from "@/components/layout/page-layout";
+import { Header } from "@/components/ui-blocks/header";
+import { StatsBar } from "@/components/ui-blocks/stats-bar";
+import { ConfigBar } from "@/components/ui-blocks/config-bar";
+import { TypingArea } from "@/components/ui-blocks/typing-area";
+import { ResultsView } from "@/components/ui-blocks/results-view";
+import { Button } from "@/components/ui/button";
 
 export const Home = () => {
     const { isReady, isActive, isFinished, isFocused } = useGameStatus();
     const { text, userInput } = useGameText();
 
     const results = useGameResultData();
-    const { initGame, resetGame, handleInput, tick, loadPersonalBests, setFocused } = useGameActions();
+    const { initGame, resetGame, handleInput, tick, setFocused } = useGameActions();
 
     // Refs
     const inputRef = useRef<HTMLInputElement>(null);
@@ -28,7 +32,6 @@ export const Home = () => {
 
     // Initialize on mount
     useEffect(() => {
-        loadPersonalBests();
         initGame();
     }, []);
 
@@ -96,6 +99,28 @@ export const Home = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isFinished, isReady, isActive, isFocused, resetGame]);
+
+    // Save result when game finishes
+    const hasSavedRef = useRef(false);
+    const { user } = useAuth();
+    const { difficulty, mode, category } = useGameConfig();
+
+    useEffect(() => {
+        if (!isFinished) {
+            hasSavedRef.current = false;
+        } else if (isFinished && user && !hasSavedRef.current) {
+            // Only save if we have valid results (avoid saving 0 wpm on quick skips if any)
+            // But results.wpm should be valid here.
+            hasSavedRef.current = true;
+            saveTestResult(user.uid, {
+                wpm: results.wpm,
+                accuracy: results.accuracy,
+                difficulty,
+                mode,
+                category
+            });
+        }
+    }, [isFinished, user, results, difficulty, mode, category]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         handleInput(e.target.value);

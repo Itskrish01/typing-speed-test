@@ -37,10 +37,9 @@ const DARK_THEMES = ["dark", "espresso", "midnight", "forest", "ruby", "vscode",
 export function ThemeProvider({
     children,
     defaultTheme = "system",
-    storageKey = "vite-ui-theme",
 }: ThemeProviderProps) {
     const [theme, setTheme] = useState<Theme>(
-        () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+        () => defaultTheme
     )
 
     useEffect(() => {
@@ -72,7 +71,7 @@ export function ThemeProvider({
     const value = {
         theme,
         setTheme: (theme: Theme) => {
-            localStorage.setItem(storageKey, theme)
+            // localStorage.setItem(storageKey, theme) // Removed as per user request
             setTheme(theme)
         },
     }

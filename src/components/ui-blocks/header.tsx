@@ -1,5 +1,6 @@
 import { Trophy, ChevronDown } from "lucide-react";
 import { ModeToggle } from "../mode-toggle";
+import { UserMenu } from "../layout/user-menu";
 import { usePersonalBests, useGameConfig } from "../../store/game-store";
 import {
     DropdownMenu,
@@ -8,6 +9,7 @@ import {
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
     const { difficulty } = useGameConfig();
@@ -18,14 +20,9 @@ export const Header = () => {
     return (
         <header className="w-full flex items-center justify-between pb-4 sm:pb-8 pt-4">
             {/* Title Area */}
-            <div className="flex flex-col gap-1 items-start text-left">
+            <Link to="/" className="flex flex-col gap-1 items-start text-left">
                 <div className="flex items-center gap-3">
-                    {/* Logo Image */}
-                    <img
-                        src="/logo/keyboard.png"
-                        alt="Logo"
-                        className="w-8 h-8 sm:w-8 sm:h-8 object-contain"
-                    />
+
 
                     {/* Title - Hidden on mobile, visible on sm+ */}
                     <h1 className="hidden sm:block text-2xl font-bold tracking-tight text-foreground">
@@ -36,7 +33,7 @@ export const Header = () => {
                 <p className="text-sm text-muted-foreground hidden sm:block">
                     Check your typing skills in a minute
                 </p>
-            </div>
+            </Link>
 
             {/* Right side controls */}
             <div className="flex items-center gap-2 sm:gap-6">
@@ -81,6 +78,7 @@ export const Header = () => {
                 <div className="w-px h-8 bg-border hidden sm:block" />
 
                 <ModeToggle />
+                <UserMenu />
             </div>
         </header>
     );

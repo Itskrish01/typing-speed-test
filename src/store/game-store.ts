@@ -2,18 +2,16 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import {
     calculateWPM,
-
-    getRandomPassage
+    getRandomPassage,
+    isNewHighScore as checkNewHighScore,
+    isFirstTest as checkFirstTest,
 } from '../lib/typing-utils';
 import {
 
-    getAllStoredBests,
-    setStoredBest,
-    isNewHighScore as checkNewHighScore,
-    isFirstTest as checkFirstTest,
     type StoredBest,
     type Difficulty
-} from '../lib/storage';
+} from '../lib/game-types';
+
 import { fireConfetti, fireBaseline } from '../lib/confetti';
 
 // Types
@@ -85,7 +83,8 @@ interface GameActions {
     tick: () => void;
 
     // Persistence
-    loadPersonalBests: () => void;
+    // Persistence
+    setPersonalBests: (bests: Record<Difficulty, StoredBest | null>) => void;
 }
 
 type GameStore = GameState & GameActions;
@@ -165,8 +164,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         set({ isFocused });
     },
 
-    loadPersonalBests: () => {
-        const bests = getAllStoredBests();
+    setPersonalBests: (bests) => {
         set({ personalBests: bests });
     },
 
@@ -290,7 +288,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     accuracy: finalAccuracy,
                     date: new Date().toISOString()
                 };
-                setStoredBest(difficulty, newBest);
+
                 // Update local state map
                 set(state => ({
                     personalBests: {
@@ -390,7 +388,7 @@ export const useGameActions = () => useGameStore(
         resetGame: state.resetGame,
         handleInput: state.handleInput,
         tick: state.tick,
-        loadPersonalBests: state.loadPersonalBests, // Updated name
+        setPersonalBests: state.setPersonalBests, // Updated name
         setFocused: state.setFocused,
     }))
 );
