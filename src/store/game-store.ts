@@ -18,12 +18,14 @@ import { fireConfetti, fireBaseline } from '../lib/confetti';
 
 // Types
 export type Mode = 'timed' | 'passage';
+export type Category = 'words' | 'quotes' | 'lyrics' | 'code';
 export type GameStatus = 'ready' | 'active' | 'finished';
 
 interface GameState {
     // Configuration
     difficulty: Difficulty;
     mode: Mode;
+    category: Category;
     customText: string;
 
     // Game Status
@@ -59,8 +61,10 @@ interface GameState {
 
 interface GameActions {
     // Configuration
+
     setDifficulty: (difficulty: Difficulty) => void;
     setMode: (mode: Mode) => void;
+    setCategory: (category: Category) => void;
     setFocused: (focused: boolean) => void;
     setCustomText: (text: string) => void;
     setTimedDuration: (duration: number) => void;
@@ -88,6 +92,7 @@ const DEFAULT_DURATION = 60;
 const initialState: GameState = {
     difficulty: 'hard',
     mode: 'passage',
+    category: 'words',
     customText: '',
     status: 'ready',
     isFocused: true,
@@ -136,6 +141,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
         get().initGame();
     },
 
+    setCategory: (category) => {
+        set({ category });
+        get().initGame();
+    },
+
     setCustomText: (text) => {
         set({ customText: text, difficulty: 'custom', mode: 'passage' });
         get().initGame();
@@ -151,14 +161,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     },
 
     initGame: () => {
-        const { difficulty, mode, customText } = get();
+        const { difficulty, mode, category, customText } = get();
         let newText = "";
 
         if (difficulty === 'custom' && customText) {
             newText = customText;
         } else {
             // Safe cast as we know difficulty isn't custom here
-            newText = getRandomPassage(difficulty as 'easy' | 'medium' | 'hard');
+            newText = getRandomPassage(difficulty as 'easy' | 'medium' | 'hard', category);
         }
 
         const initialTime = mode === 'timed' ? get().timedDuration : 0;
@@ -307,8 +317,10 @@ export const useGameConfig = () => useGameStore(
     useShallow(state => ({
         difficulty: state.difficulty,
         mode: state.mode,
+        category: state.category,
         setDifficulty: state.setDifficulty,
         setMode: state.setMode,
+        setCategory: state.setCategory,
         setCustomText: state.setCustomText,
         timedDuration: state.timedDuration,
         setTimedDuration: state.setTimedDuration,

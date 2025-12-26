@@ -5,9 +5,10 @@ import { Settings, Check, X } from "lucide-react";
 import { useGameConfig, useGameActions } from "../../store/game-store";
 
 export const ConfigBar = () => {
-    const { difficulty, setDifficulty, mode, setMode, setCustomText, timedDuration, setTimedDuration } = useGameConfig();
+    const { difficulty, setDifficulty, mode, setMode, setCustomText, timedDuration, setTimedDuration, category, setCategory } = useGameConfig();
     const { resetGame } = useGameActions();
     const difficulties = ['easy', 'medium', 'hard', 'custom'] as const;
+    const categories = ['words', 'quotes', 'lyrics', 'code'] as const;
     const durations = [15, 30, 60, 120];
     const [isCustomOpen, setIsCustomOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
@@ -29,6 +30,30 @@ export const ConfigBar = () => {
     return (
         <div className="flex flex-col items-center gap-4 w-full relative z-50">
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 w-full">
+                {/* Category Selector */}
+                <div className="flex items-center gap-2">
+                    <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                        {categories.map((cat) => (
+                            <Button
+                                key={cat}
+                                variant={category === cat ? "default" : "ghost"}
+                                size="sm"
+                                onClick={() => setCategory(cat)}
+                                className={cn(
+                                    "capitalize h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                    category === cat
+                                        ? "shadow-md bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                )}
+                            >
+                                {cat}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="h-6 w-px bg-border hidden sm:block" />
+
                 {/* Difficulty Selector */}
                 <div className="flex items-center gap-2">
                     <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">

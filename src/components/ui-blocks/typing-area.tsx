@@ -97,7 +97,7 @@ export const TypingArea = ({
             <div
                 ref={containerRef}
                 className={cn(
-                    "relative text-xl sm:text-2xl md:text-3xl leading-relaxed tracking-wide font-medium text-muted-foreground break-words select-none transition-all duration-300 font-roboto-mono",
+                    "relative text-xl sm:text-2xl md:text-3xl leading-relaxed tracking-wide font-medium text-muted-foreground break-words whitespace-pre-wrap select-none transition-all duration-300 font-roboto-mono",
                     showOverlay && "blur-[8px] opacity-40",
                     className
                 )}

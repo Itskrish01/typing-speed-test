@@ -5,6 +5,8 @@ export const calculateWPM = (correctChars: number, timeElapsed: number): number 
     return Math.round(words / minutes);
 };
 
+import { QUOTES, LYRICS, CODE_SNIPPETS } from './data';
+
 export const calculateAccuracy = (correctChars: number, totalChars: number): number => {
     if (totalChars === 0) return 100;
     return Math.round((correctChars / totalChars) * 100);
@@ -68,9 +70,25 @@ const WORD_COUNTS = {
     hard: 30
 };
 
-export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard'): string => {
+export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', category: 'words' | 'quotes' | 'lyrics' | 'code' = 'words'): string => {
     let wordList: string[] = [];
     let count = 0;
+
+    if (category === 'quotes') {
+        const randomIndex = Math.floor(Math.random() * QUOTES.length);
+        return QUOTES[randomIndex];
+    }
+
+    if (category === 'lyrics') {
+        const randomIndex = Math.floor(Math.random() * LYRICS.length);
+        return LYRICS[randomIndex];
+    }
+
+    if (category === 'code') {
+        const randomIndex = Math.floor(Math.random() * CODE_SNIPPETS.length);
+        return CODE_SNIPPETS[randomIndex];
+    }
+
 
     switch (difficulty) {
         case 'easy':
