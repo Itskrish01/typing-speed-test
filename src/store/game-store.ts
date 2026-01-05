@@ -244,13 +244,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
     },
 
     tick: () => {
-        const { mode, status } = get();
+        const { mode, status, startTime, userInput, text, errorIndices } = get();
         if (status !== 'active') return;
 
         set(state => ({
             timerCount: state.timerCount + 1,
             timeLeft: mode === 'timed' ? state.timeLeft - 1 : state.timeLeft + 1
         }));
+
+        // Recalculate WPM in real-time
+        if (startTime && userInput.length > 0) {
+            const now = Date.now();
+            const timeElapsed = Math.max((now - startTime) / 1000, 0.5);
+            const correctWords = countCorrectWords(userInput, text);
+            const accuracy = calculateAccuracy(userInput.length - errorIndices.size, userInput.length);
+            const newWpm = calculateWPM(correctWords, timeElapsed);
+            set({ wpm: newWpm, accuracy });
+        }
 
         if (mode === 'timed' && get().timeLeft <= 0) {
             get().finishGame();
@@ -361,6 +371,11 @@ export const useGameStats = () => useGameStore(
         timeLeft: state.timeLeft,
     }))
 );
+
+// Isolated selectors for minimal re-renders
+export const useWpm = () => useGameStore(state => state.wpm);
+export const useAccuracy = () => useGameStore(state => state.accuracy);
+export const useTimeLeft = () => useGameStore(state => state.timeLeft);
 
 export const useGameResultData = () => useGameStore(
     useShallow(state => ({
