@@ -12,7 +12,7 @@ import {
     type Difficulty,
     EMPTY_PERSONAL_BESTS
 } from '../lib/game-types';
-import { countCorrectChars } from '../lib/game-helpers';
+import { countCorrectChars, countCorrectWords } from '../lib/game-helpers';
 import { fireConfetti, fireBaseline } from '../lib/confetti';
 
 // Types
@@ -223,10 +223,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
             const now = Date.now();
             const timeElapsed = Math.max((now - currentStartTime) / 1000, 0.5);
 
+            const correctWords = countCorrectWords(value, text);
             const correctChars = countCorrectChars(value, text);
             const accuracy = calculateAccuracy(value.length - currentErrorCount, value.length);
 
-            const newWpm = calculateWPM(correctChars, timeElapsed);
+            const newWpm = calculateWPM(correctWords, timeElapsed);
             set({ wpm: newWpm, accuracy });
         }
 
@@ -259,8 +260,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
             timeElapsed = (endTime - startTime) / 1000;
         }
 
-        const correctChars = countCorrectChars(userInput, text);
-        const finalWpm = calculateWPM(correctChars, timeElapsed);
+        const correctWords = countCorrectWords(userInput, text);
+        const finalWpm = calculateWPM(correctWords, timeElapsed);
 
         const totalIndicesTyped = userInput.length;
         const finalAccuracy = calculateAccuracy(totalIndicesTyped - errorIndices.size, totalIndicesTyped);

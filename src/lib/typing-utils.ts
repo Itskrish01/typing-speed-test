@@ -1,10 +1,9 @@
 import { type StoredBest } from './game-types';
 
-export const calculateWPM = (correctChars: number, timeElapsed: number): number => {
+export const calculateWPM = (correctWords: number, timeElapsed: number): number => {
     if (timeElapsed <= 0) return 0;
-    const words = correctChars / 5;
     const minutes = timeElapsed / 60;
-    return Math.round(words / minutes);
+    return Math.round(correctWords / minutes);
 };
 
 import { QUOTES, LYRICS, CODE_KEYWORDS } from './data';

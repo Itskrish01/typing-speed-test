@@ -8,6 +8,23 @@ export const countCorrectChars = (input: string, target: string): number => {
 };
 
 /**
+ * Counts the number of correctly typed words.
+ * A word only counts if it's typed exactly correct.
+ */
+export const countCorrectWords = (input: string, target: string): number => {
+    const inputWords = input.trim().split(/\s+/);
+    const targetWords = target.trim().split(/\s+/);
+    
+    let correctWords = 0;
+    for (let i = 0; i < inputWords.length && i < targetWords.length; i++) {
+        if (inputWords[i] === targetWords[i]) {
+            correctWords++;
+        }
+    }
+    return correctWords;
+};
+
+/**
  * Returns a random item from an array.
  */
 export const getRandomItem = <T>(array: T[]): T => {
