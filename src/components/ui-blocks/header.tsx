@@ -40,11 +40,11 @@ export const Header = () => {
                 {/* Personal Best Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 group px-2 h-10 hover:bg-secondary/50">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
+                        <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-secondary/20">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground transition-colors shrink-0">
                                 <Trophy className="w-4 h-4" />
                             </div>
-                            <div className="flex flex-col items-start gap-0.5 text-right hidden sm:flex">
+                            <div className="hidden sm:flex flex-col items-start gap-0.5 text-right">
                                 <span className="text-[10px] uppercase font-bold text-muted-foreground leading-none whitespace-nowrap">Personal Best</span>
                                 <div className="flex items-center gap-1">
                                     <span className="text-base font-bold tabular-nums leading-none">

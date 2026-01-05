@@ -84,7 +84,7 @@ export const ActivityHeatmap = ({ history }: ActivityHeatmapProps) => {
                     </div>
                 </div>
 
-                <div className="flex gap-2 justify-center sm:justify-start">
+                <div className="flex gap-2 px-1 py-1 justify-center sm:justify-start">
                     {/* Week Columns */}
                     {calendarData.map((week, wIndex) => (
                         <div key={wIndex} className="flex flex-col gap-2">
