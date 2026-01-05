@@ -79,7 +79,12 @@ export type Theme =
     | "vscode"
     | "monochrome"
     | "matrix"
-    | "synthwave";
+    | "synthwave"
+    | "pastel-rose"
+    | "pastel-sky"
+    | "pastel-mint"
+    | "pastel-lavender"
+    | "pastel-peach";
 
 const DEFAULT_THEME: Theme = 'system';
 

@@ -81,6 +81,27 @@ export function ModeToggle() {
                     Synthwave
                     <div className="w-3 h-3 rounded-full bg-[#240046] border border-[#f72585] ml-2" />
                 </DropdownMenuItem>
+                <div className="h-px bg-border my-1" />
+                <DropdownMenuItem onClick={() => handleThemeChange("pastel-rose")} className={cn("flex justify-between", activeCheck("pastel-rose"))}>
+                    Pastel Rose
+                    <div className="w-3 h-3 rounded-full bg-[#ffe4ec] border border-[#ffb3c6] ml-2" />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleThemeChange("pastel-sky")} className={cn("flex justify-between", activeCheck("pastel-sky"))}>
+                    Pastel Sky
+                    <div className="w-3 h-3 rounded-full bg-[#e0f2fe] border border-[#7dd3fc] ml-2" />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleThemeChange("pastel-mint")} className={cn("flex justify-between", activeCheck("pastel-mint"))}>
+                    Pastel Mint
+                    <div className="w-3 h-3 rounded-full bg-[#dcfce7] border border-[#86efac] ml-2" />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleThemeChange("pastel-lavender")} className={cn("flex justify-between", activeCheck("pastel-lavender"))}>
+                    Pastel Lavender
+                    <div className="w-3 h-3 rounded-full bg-[#ede9fe] border border-[#c4b5fd] ml-2" />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleThemeChange("pastel-peach")} className={cn("flex justify-between", activeCheck("pastel-peach"))}>
+                    Pastel Peach
+                    <div className="w-3 h-3 rounded-full bg-[#ffedd5] border border-[#fdba74] ml-2" />
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
