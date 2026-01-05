@@ -40,19 +40,19 @@ export const Header = () => {
                 {/* Personal Best Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-secondary/20">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground transition-colors shrink-0">
+                        <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-secondary/20" aria-label="View personal bests">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground transition-colors shrink-0">
                                 <Trophy className="w-4 h-4" />
-                            </div>
-                            <div className="hidden sm:flex flex-col items-start gap-0.5 text-right">
+                            </span>
+                            <span className="hidden sm:flex flex-col items-start gap-0.5 text-right">
                                 <span className="text-[10px] uppercase font-bold text-muted-foreground leading-none whitespace-nowrap">Personal Best</span>
-                                <div className="flex items-center gap-1">
+                                <span className="flex items-center gap-1">
                                     <span className="text-base font-bold tabular-nums leading-none">
                                         {currentBest} wpm
                                     </span>
                                     <ChevronDown className="w-3 h-3 text-muted-foreground opacity-50" />
-                                </div>
-                            </div>
+                                </span>
+                            </span>
                             {/* Mobile only WPM display */}
                             <span className="sm:hidden text-sm font-bold tabular-nums leading-none">
                                 {currentBest}

@@ -26,8 +26,9 @@ export const UserMenu = () => {
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
+                    <Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu">
                         <UserIcon className="h-5 w-5" />
+                        <span className="sr-only">User menu</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -51,10 +52,11 @@ export const UserMenu = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full bg-secondary/10 hover:bg-secondary/20">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">
+                <Button variant="ghost" size="icon" className="rounded-full bg-secondary/10 hover:bg-secondary/20" aria-label="User menu">
+                    <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">
                         {user.email?.charAt(0).toUpperCase()}
-                    </div>
+                    </span>
+                    <span className="sr-only">User menu</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

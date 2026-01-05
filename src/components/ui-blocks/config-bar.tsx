@@ -183,8 +183,9 @@ export const ConfigBar = () => {
                                 <Settings className="w-5 h-5" />
                                 Custom Text
                             </h3>
-                            <Button variant="ghost" size="icon" onClick={() => setIsCustomOpen(false)}>
+                            <Button variant="ghost" size="icon" onClick={() => setIsCustomOpen(false)} aria-label="Close custom text dialog">
                                 <X className="w-5 h-5" />
+                                <span className="sr-only">Close</span>
                             </Button>
                         </div>
 
