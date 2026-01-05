@@ -57,10 +57,17 @@ I built a robust **Theming System** using `next-themes` and Tailwind CSS variabl
 
 ### 📊 Vital Statistics
 *   Real-time **WPM** & **Accuracy**.
-*   **Personal Bests** saved locally for every difficulty level.
+*   **Personal Bests** saved locally and synced to the cloud when logged in.
 *   **Visual Feedback**: Celebratory confetti when you break a record!
 
-### 🎨 10+ Hand-Crafted Themes
+### ☁️ Cloud Features (Firebase)
+*   **User Authentication**: Sign up and log in with email/password.
+*   **Cloud Sync**: Your personal bests, test history, and theme preferences sync across devices.
+*   **User Profiles**: Unique usernames and public profile cards.
+*   **Test History**: View your past typing tests with detailed stats.
+*   **Activity Heatmap**: Visualize your daily typing activity over time.
+
+### 🎨 15+ Hand-Crafted Themes
 Includes Light, Dark, Espresso, Midnight, Forest, Ruby, Synthwave, and more.
 
 ---
@@ -70,6 +77,7 @@ Includes Light, Dark, Espresso, Midnight, Forest, Ruby, Synthwave, and more.
 *   **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
 *   **Language**: [TypeScript](https://www.typescriptlang.org/)
 *   **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+*   **Backend**: [Firebase](https://firebase.google.com/) (Authentication + Firestore)
 *   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 *   **UI Components**: [shadcn/ui](https://ui.shadcn.com/) + [Lucide Icons](https://lucide.dev/)
 *   **Animations**: CSS Transitions + `canvas-confetti`
@@ -98,14 +106,6 @@ Includes Light, Dark, Espresso, Midnight, Forest, Ruby, Synthwave, and more.
     ```bash
     npm run build
     ```
-
----
-
-## 🤝 Future Roadmap
-
-*   [ ] **Multiplayer Race Mode**: Compete against friends in real-time.
-*   [ ] **Cloud Sync**: Save your history and stats across devices (Firebase integration started).
-*   [ ] **Heatmap**: Visualizing daily typing activity.
 
 ---
 
