@@ -10,6 +10,7 @@ import { useTheme, type Theme } from "./theme-provider"
 import { cn } from "../lib/utils"
 import { useAuth } from "../context/auth-context"
 import { updateUserTheme } from "../lib/firestore-helpers"
+import { saveTheme } from "../lib/storage-helpers"
 
 export function ModeToggle() {
     const { theme, setTheme } = useTheme()
@@ -20,8 +21,7 @@ export function ModeToggle() {
         if (user) {
             updateUserTheme(user.uid, newTheme)
         } else {
-            // Save to localStorage for non-logged-in users
-            localStorage.setItem("theme", newTheme)
+            saveTheme(newTheme)
         }
     }
 

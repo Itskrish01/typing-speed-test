@@ -1,17 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import { loadTheme, type Theme } from "../lib/storage-helpers"
 
-export type Theme =
-    | "dark"
-    | "light"
-    | "system"
-    | "espresso"
-    | "midnight"
-    | "forest"
-    | "ruby"
-    | "vscode"
-    | "monochrome"
-    | "matrix"
-    | "synthwave";
+export type { Theme };
 
 type ThemeProviderProps = {
     children: React.ReactNode
@@ -40,9 +30,8 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
     const [theme, setTheme] = useState<Theme>(
         () => {
-            // Try to read from localStorage for non-logged-in users
-            const storedTheme = localStorage.getItem("theme") as Theme | null
-            return storedTheme || defaultTheme
+            const storedTheme = loadTheme();
+            return storedTheme !== 'system' ? storedTheme : defaultTheme;
         }
     )
 

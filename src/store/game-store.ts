@@ -12,7 +12,8 @@ import {
     type Difficulty,
     EMPTY_PERSONAL_BESTS
 } from '../lib/game-types';
-import { countCorrectChars, countCorrectWords } from '../lib/game-helpers';
+import { countCorrectWords } from '../lib/game-helpers';
+import { saveGameConfig, loadGameConfig } from '../lib/storage-helpers';
 import { fireConfetti, fireBaseline } from '../lib/confetti';
 
 // Types
@@ -91,13 +92,15 @@ interface GameActions {
 type GameStore = GameState & GameActions;
 
 const DEFAULT_TIME = 60;
-const DEFAULT_DURATION = 60;
+
+// Load saved config from localStorage
+const savedConfig = loadGameConfig();
 
 const initialState: GameState = {
-    difficulty: 'hard',
-    mode: 'passage',
-    category: 'words',
-    language: 'javascript',
+    difficulty: savedConfig.difficulty,
+    mode: savedConfig.mode,
+    category: savedConfig.category,
+    language: savedConfig.language,
     customText: '',
     status: 'ready',
     isFocused: true,
@@ -105,9 +108,9 @@ const initialState: GameState = {
     endTime: null,
     text: '',
     userInput: '',
-    timeLeft: DEFAULT_TIME,
-    initialTime: DEFAULT_TIME,
-    timedDuration: DEFAULT_DURATION,
+    timeLeft: savedConfig.mode === 'timed' ? savedConfig.timedDuration : DEFAULT_TIME,
+    initialTime: savedConfig.mode === 'timed' ? savedConfig.timedDuration : DEFAULT_TIME,
+    timedDuration: savedConfig.timedDuration,
     timerCount: 0,
     wpm: 0,
     accuracy: 100,
@@ -124,11 +127,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     setDifficulty: (difficulty) => {
         set({ difficulty });
+        saveGameConfig({ difficulty });
         get().initGame();
     },
 
     setTimedDuration: (duration) => {
         set({ timedDuration: duration });
+        saveGameConfig({ timedDuration: duration });
         if (get().mode === 'timed') {
             get().initGame();
         }
@@ -138,16 +143,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const { timedDuration } = get();
         const initialTime = mode === 'timed' ? timedDuration : 0;
         set({ mode, initialTime, timeLeft: initialTime });
+        saveGameConfig({ mode });
         get().initGame();
     },
 
     setCategory: (category) => {
         set({ category });
+        saveGameConfig({ category });
         get().initGame();
     },
 
     setLanguage: (language) => {
         set({ language });
+        saveGameConfig({ language });
         get().initGame();
     },
 
@@ -224,7 +232,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
             const timeElapsed = Math.max((now - currentStartTime) / 1000, 0.5);
 
             const correctWords = countCorrectWords(value, text);
-            const correctChars = countCorrectChars(value, text);
             const accuracy = calculateAccuracy(value.length - currentErrorCount, value.length);
 
             const newWpm = calculateWPM(correctWords, timeElapsed);
