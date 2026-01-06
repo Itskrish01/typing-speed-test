@@ -9,12 +9,13 @@ export const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-2 selection:bg-primary/30 selection:text-primary-foreground">
-            <div className="grid gap-8 grid-cols-1 md:grid-cols-9 items-start justify-items-center w-full max-w-7xl">
-                <div className="w-full md:col-start-1 md:col-end-3">
+        <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 sm:px-6 lg:px-8 selection:bg-primary/30 selection:text-primary-foreground">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-0 items-start justify-items-center w-full max-w-6xl">
+                <div className="w-full max-w-xs lg:justify-self-start">
                     <RegisterForm onSuccess={handleSuccess} />
                 </div>
-                <div className="w-full md:col-start-7 md:col-end-9">
+                <div className="hidden lg:block" /> {/* Empty middle column for gap */}
+                <div className="w-full max-w-xs lg:justify-self-end">
                     <LoginForm onSuccess={handleSuccess} />
                 </div>
             </div>

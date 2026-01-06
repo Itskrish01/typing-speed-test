@@ -55,7 +55,6 @@ export const TypingArea = ({
                 
                 // Only scroll if the current character is outside comfortable viewing range
                 const visibleTop = scrollContainer.scrollTop;
-                const visibleBottom = visibleTop + scrollContainer.clientHeight;
                 const charAbsoluteTop = charRelativeTop;
                 
                 // Scroll when the current line is below the first 2 lines or above the visible area
@@ -126,7 +125,7 @@ export const TypingArea = ({
             {/* Scrollable Typing Container */}
             <div
                 ref={scrollContainerRef}
-                className="max-h-[200px] sm:max-h-[250px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-secondary scrollbar-track-transparent"
+                className="max-h-[200px] sm:max-h-[450px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-secondary scrollbar-track-transparent"
             >
                 <div
                     ref={containerRef}

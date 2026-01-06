@@ -92,7 +92,7 @@ export const Home = () => {
             const isInput = ['INPUT', 'TEXTAREA'].includes(target.tagName);
 
             if (isReady && isFocused && !isActive && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey && !isInput) {
-                inputRef.current?.focus();
+                inputRef.current?.focus({ preventScroll: true });
             }
         };
 
@@ -127,7 +127,7 @@ export const Home = () => {
     };
 
     const focusInput = () => {
-        inputRef.current?.focus();
+        inputRef.current?.focus({ preventScroll: true });
     };
 
     const handleRestart = () => {
