@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -25,6 +25,13 @@ export const ConfigBar = () => {
     const [isCustomOpen, setIsCustomOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
     const dialogRef = useRef<HTMLDivElement>(null);
+
+    // Reset category from lyrics if user is not logged in
+    useEffect(() => {
+        if (category === 'lyrics' && !user) {
+            setCategory('words');
+        }
+    }, [user, category, setCategory]);
 
     const handleCategoryClick = (cat: typeof categories[number]) => {
         // Require login for lyrics mode

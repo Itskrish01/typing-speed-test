@@ -29,16 +29,13 @@ interface LyricsOvhTrack {
     duration: number;
 }
 
-interface LyricsOvhSearchResponse {
-    data?: LyricsOvhTrack[];
-    total?: number;
-    error?: string;
-}
-
 interface LyricsOvhLyricsResponse {
     lyrics?: string;
     error?: string;
 }
+
+// Search response is an array directly, not wrapped in an object
+type LyricsOvhSearchResponse = LyricsOvhTrack[];
 
 // Store song metadata for lyrics lookup
 const songCache = new Map<string, { artist: string; title: string }>();
@@ -100,11 +97,8 @@ export class LyricsOvhProvider implements SongApiProvider {
             
             const data: LyricsOvhSearchResponse = await response.json();
             
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            
-            const tracks = data.data || [];
+            // API returns array directly
+            const tracks = Array.isArray(data) ? data : [];
             const limitedTracks = tracks.slice(0, limit);
             
             // Map tracks and cache metadata for lyrics lookup
@@ -120,7 +114,7 @@ export class LyricsOvhProvider implements SongApiProvider {
             
             return {
                 songs,
-                total: data.total || songs.length
+                total: songs.length
             };
         } catch (error) {
             console.error('Lyrics.ovh search error:', error);

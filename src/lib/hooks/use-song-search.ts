@@ -10,6 +10,8 @@ interface UseSongSearchOptions {
     debounceMs?: number;
     minQueryLength?: number;
     maxResults?: number;
+    /** If false, all API calls will be blocked. Used for auth gating. */
+    enabled?: boolean;
 }
 
 interface UseSongSearchReturn {
@@ -27,7 +29,8 @@ export function useSongSearch(options: UseSongSearchOptions = {}): UseSongSearch
     const {
         debounceMs = 300,
         minQueryLength = 2,
-        maxResults = 8
+        maxResults = 8,
+        enabled = true
     } = options;
 
     const [query, setQuery] = useState('');
@@ -49,6 +52,14 @@ export function useSongSearch(options: UseSongSearchOptions = {}): UseSongSearch
         // Clear previous request
         if (abortControllerRef.current) {
             abortControllerRef.current.abort();
+        }
+
+        // Block all API calls if not enabled (auth gating)
+        if (!enabled) {
+            setResults([]);
+            setError(null);
+            setIsLoading(false);
+            return;
         }
 
         // Reset if query too short
@@ -87,9 +98,15 @@ export function useSongSearch(options: UseSongSearchOptions = {}): UseSongSearch
                 clearTimeout(debounceRef.current);
             }
         };
-    }, [query, debounceMs, minQueryLength, maxResults]);
+    }, [query, debounceMs, minQueryLength, maxResults, enabled]);
 
     const selectSong = useCallback(async (song: Song): Promise<SongLyrics | null> => {
+        // Block API call if not enabled
+        if (!enabled) {
+            setError('Authentication required');
+            return null;
+        }
+
         setIsSelectingLyrics(true);
         setError(null);
 
@@ -108,7 +125,7 @@ export function useSongSearch(options: UseSongSearchOptions = {}): UseSongSearch
         } finally {
             setIsSelectingLyrics(false);
         }
-    }, []);
+    }, [enabled]);
 
     const clearResults = useCallback(() => {
         setQuery('');

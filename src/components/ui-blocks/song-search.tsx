@@ -10,6 +10,7 @@ import { Search, Music2, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useSongSearch } from '@/lib/hooks/use-song-search';
+import { useAuth } from '@/context/auth-context';
 import {
     Command,
     CommandEmpty,
@@ -33,6 +34,7 @@ interface SongSearchProps {
 }
 
 export function SongSearch({ onSongSelect, className, disabled }: SongSearchProps) {
+    const { user } = useAuth();
     const [open, setOpen] = useState(false);
     const {
         query,
@@ -43,7 +45,12 @@ export function SongSearch({ onSongSelect, className, disabled }: SongSearchProp
         selectSong,
         isSelectingLyrics,
         clearResults
-    } = useSongSearch({ debounceMs: 300, maxResults: 8 });
+    } = useSongSearch({ debounceMs: 300, maxResults: 8, enabled: !!user });
+
+    // Don't render if user is not authenticated
+    if (!user) {
+        return null;
+    }
 
     const handleSelect = async (song: Song) => {
         const lyrics = await selectSong(song);
