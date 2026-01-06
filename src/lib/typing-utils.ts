@@ -6,7 +6,7 @@ export const calculateWPM = (correctWords: number, timeElapsed: number): number 
     return Math.round(correctWords / minutes);
 };
 
-import { QUOTES, LYRICS, CODE_KEYWORDS } from './data';
+import { QUOTES, CODE_KEYWORDS } from './data';
 export type Language = 'javascript' | 'python' | 'java' | 'c++' | 'c#' | 'sql' | 'html' | 'css';
 
 export const calculateAccuracy = (correctChars: number, totalChars: number): number => {
@@ -86,7 +86,8 @@ export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', categor
     }
 
     if (category === 'lyrics') {
-        return getRandomItem(LYRICS);
+        // Lyrics mode requires searching for a song first
+        return 'Search for a song above to start typing lyrics...';
     }
 
     if (category === 'code') {

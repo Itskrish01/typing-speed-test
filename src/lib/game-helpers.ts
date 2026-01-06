@@ -25,6 +25,29 @@ export const countCorrectWords = (input: string, target: string): number => {
 };
 
 /**
+ * Calculates "gross" words based on characters typed.
+ * Standard typing test convention: 5 characters = 1 word.
+ * This provides smoother real-time WPM updates.
+ */
+export const countGrossWords = (correctChars: number): number => {
+    return correctChars / 5;
+};
+
+/**
+ * Counts correct characters for real-time WPM calculation.
+ * More granular than word-based counting for smoother updates.
+ */
+export const countCorrectCharsRealtime = (input: string, target: string): number => {
+    let correct = 0;
+    for (let i = 0; i < input.length && i < target.length; i++) {
+        if (input[i] === target[i]) {
+            correct++;
+        }
+    }
+    return correct;
+};
+
+/**
  * Returns a random item from an array.
  */
 export const getRandomItem = <T>(array: T[]): T => {

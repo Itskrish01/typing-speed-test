@@ -1,16 +1,23 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
 import { Settings, Check, X } from "lucide-react";
-import { useGameConfig, useGameActions } from "../../store/game-store";
+import { useGameConfig, useGameActions, useGameStatus } from "../../store/game-store";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { Textarea } from "../ui/textarea";
+import { SongSearch } from "./song-search";
+import { useAuth } from "../../context/auth-context";
 
 
 export const ConfigBar = () => {
     const { difficulty, setDifficulty, mode, setMode, setCustomText, timedDuration, setTimedDuration, category, setCategory, language, setLanguage } = useGameConfig();
     const { resetGame } = useGameActions();
+    const { isActive } = useGameStatus();
+    const { user } = useAuth();
+    const navigate = useNavigate();
     const difficulties = ['easy', 'medium', 'hard', 'custom'] as const;
     const categories = ['words', 'quotes', 'lyrics', 'code'] as const;
     const languages = ['javascript', 'python', 'java', 'c++', 'c#', 'sql', 'html', 'css'] as const;
@@ -18,6 +25,18 @@ export const ConfigBar = () => {
     const [isCustomOpen, setIsCustomOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
     const dialogRef = useRef<HTMLDivElement>(null);
+
+    const handleCategoryClick = (cat: typeof categories[number]) => {
+        // Require login for lyrics mode
+        if (cat === 'lyrics' && !user) {
+            toast.warning('Login required', {
+                description: 'Please login to use the lyrics mode'
+            });
+            navigate('/login');
+            return;
+        }
+        setCategory(cat);
+    };
 
     const handleCustomClick = () => {
         setIsCustomOpen(true);
@@ -32,6 +51,11 @@ export const ConfigBar = () => {
         }
     };
 
+    const handleSongSelect = (lyrics: string, songTitle: string, artist: string) => {
+        // Set the lyrics as custom text for typing
+        setCustomText(lyrics);
+    };
+
     return (
         <div className="flex flex-col items-center gap-4 w-full relative z-50">
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 w-full">
@@ -43,7 +67,7 @@ export const ConfigBar = () => {
                                 key={cat}
                                 variant={category === cat ? "default" : "ghost"}
                                 size="sm"
-                                onClick={() => setCategory(cat)}
+                                onClick={() => handleCategoryClick(cat)}
                                 className={cn(
                                     "capitalize h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
                                     category === cat
@@ -82,33 +106,42 @@ export const ConfigBar = () => {
 
                 <div className="h-6 w-px bg-border hidden sm:block" />
 
-                {/* Difficulty Selector */}
-                <div className="flex items-center gap-2">
-                    <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
-                        {difficulties.map((diff) => (
-                            <Button
-                                key={diff}
-                                variant={difficulty === diff ? "default" : "ghost"}
-                                size="sm"
-                                onClick={() => {
-                                    if (diff === 'custom') {
-                                        handleCustomClick();
-                                    } else {
-                                        setDifficulty(diff);
-                                    }
-                                }}
-                                className={cn(
-                                    "capitalize h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
-                                    difficulty === diff
-                                        ? "shadow-md bg-primary text-primary-foreground"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                                )}
-                            >
-                                {diff}
-                            </Button>
-                        ))}
+                {/* Difficulty Selector - Hidden for lyrics, show Song Search instead */}
+                {category === 'lyrics' ? (
+                    <div className="flex items-center gap-2">
+                        <SongSearch 
+                            onSongSelect={handleSongSelect} 
+                            disabled={isActive}
+                        />
                     </div>
-                </div>
+                ) : (
+                    <div className="flex items-center gap-2">
+                        <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                            {difficulties.map((diff) => (
+                                <Button
+                                    key={diff}
+                                    variant={difficulty === diff ? "default" : "ghost"}
+                                    size="sm"
+                                    onClick={() => {
+                                        if (diff === 'custom') {
+                                            handleCustomClick();
+                                        } else {
+                                            setDifficulty(diff);
+                                        }
+                                    }}
+                                    className={cn(
+                                        "capitalize h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                        difficulty === diff
+                                            ? "shadow-md bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                    )}
+                                >
+                                    {diff}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="h-6 w-px bg-border hidden sm:block" />
 

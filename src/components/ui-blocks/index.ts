@@ -4,6 +4,7 @@ export { Header } from "./header";
 export { HistoryTable } from "./history-table";
 export { ProfileBanner } from "./profile-banner";
 export { ResultsView } from "./results-view";
+export { SongSearch } from "./song-search";
 export { StatsBar } from "./stats-bar";
 export { StatsOverview } from "./stats-overview";
 export { TypingArea } from "./typing-area";

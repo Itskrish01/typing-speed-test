@@ -12,7 +12,7 @@ import {
     type Difficulty,
     EMPTY_PERSONAL_BESTS
 } from '../lib/game-types';
-import { countCorrectWords } from '../lib/game-helpers';
+import { countCorrectWords, countCorrectCharsRealtime, countGrossWords } from '../lib/game-helpers';
 import { saveGameConfig, loadGameConfig } from '../lib/storage-helpers';
 import { fireConfetti, fireBaseline } from '../lib/confetti';
 
@@ -227,14 +227,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const currentErrorCount = newErrorIndices.size;
         set({ userInput: value, errorIndices: newErrorIndices, errorCount: currentErrorCount });
 
+        // Real-time WPM using character-based calculation (5 chars = 1 word)
         if (currentStartTime && value.length > 0) {
             const now = Date.now();
             const timeElapsed = Math.max((now - currentStartTime) / 1000, 0.5);
 
-            const correctWords = countCorrectWords(value, text);
+            // Use character-based word count for smoother real-time updates
+            const correctChars = countCorrectCharsRealtime(value, text);
+            const grossWords = countGrossWords(correctChars);
             const accuracy = calculateAccuracy(value.length - currentErrorCount, value.length);
 
-            const newWpm = calculateWPM(correctWords, timeElapsed);
+            const newWpm = calculateWPM(grossWords, timeElapsed);
             set({ wpm: newWpm, accuracy });
         }
 
@@ -252,13 +255,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
             timeLeft: mode === 'timed' ? state.timeLeft - 1 : state.timeLeft + 1
         }));
 
-        // Recalculate WPM in real-time
+        // Recalculate WPM in real-time using character-based calculation
         if (startTime && userInput.length > 0) {
             const now = Date.now();
             const timeElapsed = Math.max((now - startTime) / 1000, 0.5);
-            const correctWords = countCorrectWords(userInput, text);
+            const correctChars = countCorrectCharsRealtime(userInput, text);
+            const grossWords = countGrossWords(correctChars);
             const accuracy = calculateAccuracy(userInput.length - errorIndices.size, userInput.length);
-            const newWpm = calculateWPM(correctWords, timeElapsed);
+            const newWpm = calculateWPM(grossWords, timeElapsed);
             set({ wpm: newWpm, accuracy });
         }
 
@@ -277,8 +281,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
             timeElapsed = (endTime - startTime) / 1000;
         }
 
-        const correctWords = countCorrectWords(userInput, text);
-        const finalWpm = calculateWPM(correctWords, timeElapsed);
+        // Use character-based calculation for final WPM (consistent with real-time)
+        const correctChars = countCorrectCharsRealtime(userInput, text);
+        const grossWords = countGrossWords(correctChars);
+        const finalWpm = calculateWPM(grossWords, timeElapsed);
 
         const totalIndicesTyped = userInput.length;
         const finalAccuracy = calculateAccuracy(totalIndicesTyped - errorIndices.size, totalIndicesTyped);
