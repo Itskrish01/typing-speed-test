@@ -84,9 +84,18 @@ export const Profile = () => {
                 <ProfileBanner
                     displayName={displayName}
                     joinedDate={joinedDate}
-                    testsCount={totalTests} // This will now show only loaded count. Acceptable for this iteration.
+                    testsCount={totalTests}
                     onEdit={() => setIsEditOpen(true)}
                 />
+
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Share2 className="w-3 h-3" />
+                    <span className="opacity-60">Share:</span>
+                    <span className="select-all hover:text-foreground transition-colors">{publicUrl}</span>
+                    <a href={publicUrl} target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">
+                        <ExternalLink className="w-3 h-3" />
+                    </a>
+                </div>
 
                 {user && profile && (
                     <UsernameEditDialog
@@ -133,16 +142,6 @@ export const Profile = () => {
                             </Button>
                         </div>
                     )}
-                </div>
-
-                <div className="flex justify-center pt-8 pb-4 opacity-50 hover:opacity-100 transition-opacity">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/10 px-3 py-1.5 rounded-full select-all border border-transparent hover:border-border/20 transition-colors">
-                        <Share2 className="w-3 h-3" />
-                        <span>{publicUrl}</span>
-                        <a href={publicUrl} target="_blank" rel="noreferrer" className="hover:text-primary ml-1">
-                            <ExternalLink className="w-3 h-3" />
-                        </a>
-                    </div>
                 </div>
 
             </main>
