@@ -26,6 +26,10 @@ export interface TestResult {
     timestamp: any; // ServerTimestamp
 }
 
+export interface HistoryEntry extends TestResult {
+    id: string;
+}
+
 export interface UserProfile {
     uid: string;
     email: string | null;
@@ -171,7 +175,7 @@ export const saveTestResult = async (userId: string, result: Omit<TestResult, 'u
 
 
 
-export const getUserHistory = async (userId: string, limitCount = 50) => {
+export const getUserHistory = async (userId: string, limitCount = 50): Promise<HistoryEntry[]> => {
     // Keep original for backward compatibility if needed, or redirect to paginated
     const historyRef = collection(db, "history");
     const q = query(
@@ -182,10 +186,10 @@ export const getUserHistory = async (userId: string, limitCount = 50) => {
     );
 
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HistoryEntry));
 };
 
-export const getPaginatedHistory = async (userId: string, limitCount: number, lastDoc: any = null) => {
+export const getPaginatedHistory = async (userId: string, limitCount: number, lastDoc: any = null): Promise<{ data: HistoryEntry[]; lastDoc: any }> => {
     const historyRef = collection(db, "history");
     let q = query(
         historyRef,
@@ -199,7 +203,7 @@ export const getPaginatedHistory = async (userId: string, limitCount: number, la
     }
 
     const querySnapshot = await getDocs(q);
-    const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HistoryEntry));
     const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
     return { data, lastDoc: lastVisible };

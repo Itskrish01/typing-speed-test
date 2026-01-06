@@ -1,14 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/auth-context";
-import { logoutUser } from "../../lib/auth-helpers";
-import { Button } from "../ui/button";
+import { useAuth } from "@/context/auth-context";
+import { logoutUser } from "@/lib/auth-helpers";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { User as UserIcon, LogOut, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
 
 export const UserMenu = () => {
@@ -64,7 +64,7 @@ export const UserMenu = () => {
                     <div className="flex flex-col space-y-1 leading-none">
                         {user.displayName && <p className="font-medium">{user.displayName}</p>}
                         {user.email && (
-                            <p className="w-[200px] truncate text-sm text-muted-foreground">
+                            <p className="w-50 truncate text-sm text-muted-foreground">
                                 {user.email}
                             </p>
                         )}

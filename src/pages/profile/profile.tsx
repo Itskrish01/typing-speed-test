@@ -1,25 +1,27 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../context/auth-context";
-import { Button } from "../../components/ui/button";
-import { HistoryTable } from "../../components/ui-blocks/history-table";
-import { getPaginatedHistory, ensureUserProfile, type UserProfile } from "../../lib/firestore-helpers";
-import { PageLayout } from "../../components/layout/page-layout";
-import { Header } from "../../components/ui-blocks/header";
+import { useAuth } from "@/context/auth-context";
+import { Button } from "@/components/ui/button";
+import { HistoryTable } from "@/components/ui-blocks/history-table";
+import { getPaginatedHistory, ensureUserProfile, type UserProfile, type HistoryEntry } from "@/lib/firestore-helpers";
+import { PageLayout } from "@/components/layout/page-layout";
+import { Header } from "@/components/ui-blocks/header";
 import { Share2, ExternalLink } from "lucide-react";
-import { ActivityHeatmap } from "../../components/ui-blocks/activity-heatmap";
-import { StatsOverview } from "../../components/ui-blocks/stats-overview";
-import { UsernameEditDialog } from "../../components/ui-blocks/username-edit-dialog";
-import { ProfileBanner } from "../../components/ui-blocks/profile-banner";
+import { ActivityHeatmap } from "@/components/ui-blocks/activity-heatmap";
+import { StatsOverview } from "@/components/ui-blocks/stats-overview";
+import { UsernameEditDialog } from "@/components/ui-blocks/username-edit-dialog";
+import { ProfileBanner } from "@/components/ui-blocks/profile-banner";
+import { LoadingSpinner } from "@/components/common";
+import type { DocumentSnapshot } from "firebase/firestore";
 
 export const Profile = () => {
     const { user } = useAuth();
-    const [history, setHistory] = useState<any[]>([]);
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
     // Pagination state
-    const [lastDoc, setLastDoc] = useState<any>(null);
+    const [lastDoc, setLastDoc] = useState<DocumentSnapshot | null>(null);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
@@ -62,11 +64,7 @@ export const Profile = () => {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-            </div>
-        );
+        return <LoadingSpinner fullScreen />;
     }
 
     const displayName = profile?.username || profile?.displayName || 'User';
@@ -124,7 +122,7 @@ export const Profile = () => {
                                 variant="outline"
                                 onClick={handleLoadMore}
                                 disabled={loadingMore}
-                                className="w-full md:w-auto min-w-[200px]"
+                                className="w-full md:w-auto min-w-50"
                             >
                                 {loadingMore ? (
                                     <div className="flex items-center gap-2">
