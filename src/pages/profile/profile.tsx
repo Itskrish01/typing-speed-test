@@ -62,7 +62,6 @@ export const Profile = () => {
     };
 
     if (loading) {
-        // ... (loading state)
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -70,37 +69,12 @@ export const Profile = () => {
         );
     }
 
-    // ... (rest of component)
     const displayName = profile?.username || profile?.displayName || 'User';
-    const joinedDate = profile?.createdAt?.toDate ? profile.createdAt.toDate().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Unknown';
-    const totalTests = history.length; // Note: This might be inaccurate if paginated, but for now it's just loaded items count or we fetch total count separately? 
-    // The user previous code used history.length. If we want total tests count, we arguably need a separate counter in UserProfile. 
-    // For now, let's stick to loaded history length or maybe keep strict total in profile? 
-    // Actually ProfileBanner shows "Tests Started". Ideally this comes from a counter field. 
-    // Let's use history.length for now but acknowledge it's only loaded ones. 
-    // WAIT: User wanted pagination. If I only load 10, totalTests will show 10. That's bad for the banner stats.
-    // Ideally user profile should track total tests.
-    // Let's keep it simple: We fetch ALL history for stats calculation in StatsOverview? Or do we want StatsOverview to also be based on loaded data?
-    // User asked for "show the history of previously done test using table".
-    // If we change history to be paginated, StatsOverview will only see partial data.
-    // Solution: Fetch full history for Stats/Banner (lightweight if just fields, but we need all for stats). 
-    // OR: just let StatsOverview work on loaded data. 
-    // BETTER: Seperate history for Table vs Stats. 
-    // But fetching ALL history might be expensive if thousands. 
-    // Practical approach: Fetch full history for stats (maybe limit 1000?), and use slice for table? 
-    // No, pagination implies we don't fetch all. 
-    // LET'S STICK TO: Data driven by what we have. 
+    const joinedDate = profile?.createdAt?.toDate
+        ? profile.createdAt.toDate().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+        : 'Unknown';
+    const totalTests = history.length;
 
-    // Re-reading: "remember to add load more button after every 10 results"
-
-    // Update: I will modify useEffect to fetch stats separately or just accept that stats update as successful load more happens. 
-    // Actually, `getUserHistory(user.uid, 500)` was used before. That's 500 items. 
-    // Maybe we just keep fetching 500 for "Stats" but only show 10 in table?
-    // No, efficient pagination means we fetch 10.
-
-    // Let's implement the table with the `history` state.
-
-    // Check if we should use username in URL (if available) or fallback to ID (though we prefer username now)
     const publicUrl = profile?.username
         ? `${window.location.origin}/u/${profile.username}`
         : `${window.location.origin}/u/${user?.uid}`;
@@ -109,8 +83,6 @@ export const Profile = () => {
         <PageLayout>
             <Header />
             <main className="flex-1 py-8 w-full space-y-8">
-
-                {/* --- Profile Banner --- */}
                 <ProfileBanner
                     displayName={displayName}
                     joinedDate={joinedDate}
@@ -118,11 +90,9 @@ export const Profile = () => {
                     onEdit={() => setIsEditOpen(true)}
                 />
 
-                {/* ... Edit Dialog ... */}
                 {user && profile && (
                     <UsernameEditDialog
                         open={isEditOpen}
-                        // ... props
                         onOpenChange={setIsEditOpen}
                         currentUsername={profile.username || ''}
                         userId={user.uid}
@@ -132,10 +102,8 @@ export const Profile = () => {
                     />
                 )}
 
-                {/* --- Stats Grid --- */}
                 <StatsOverview history={history} personalBests={profile?.bestWpm} />
 
-                {/* --- Activity Heatmap --- */}
                 <div className="bg-secondary/20 rounded-xl p-6">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
@@ -146,7 +114,6 @@ export const Profile = () => {
                     <ActivityHeatmap history={history} />
                 </div>
 
-                {/* --- History Table (NEW) --- */}
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold px-1">Recent Tests</h2>
                     <HistoryTable data={history} />
@@ -170,7 +137,6 @@ export const Profile = () => {
                     )}
                 </div>
 
-                {/* Public Link Footer */}
                 <div className="flex justify-center pt-8 pb-4 opacity-50 hover:opacity-100 transition-opacity">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/10 px-3 py-1.5 rounded-full select-all border border-transparent hover:border-border/20 transition-colors">
                         <Share2 className="w-3 h-3" />
