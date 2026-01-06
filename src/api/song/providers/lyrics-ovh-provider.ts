@@ -164,16 +164,11 @@ export class LyricsOvhProvider implements SongApiProvider {
                 throw new Error('Lyrics too short for typing practice');
             }
             
-            // Limit lyrics length for typing practice (max ~500 chars)
-            const truncatedLyrics = cleanedLyrics.length > 500 
-                ? cleanedLyrics.substring(0, 500).replace(/\s\S*$/, '') // Cut at word boundary
-                : cleanedLyrics;
-            
             return {
                 songId,
                 title,
                 artist,
-                lyrics: truncatedLyrics
+                lyrics: cleanedLyrics
             };
         } catch (error) {
             if (error instanceof Error) {
