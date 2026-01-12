@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { HistoryTable } from "@/components/ui-blocks/history-table";
@@ -22,15 +23,18 @@ import { Filter, ArrowUpDown, Check } from "lucide-react";
 
 export const Profile = () => {
     const { user } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [history, setHistory] = useState<HistoryEntry[]>([]); // For list
     const [statsHistory, setStatsHistory] = useState<HistoryEntry[]>([]); // For heatmap/stats
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
-    // Filter & Sort State
-    const [sortBy, setSortBy] = useState<'timestamp' | 'wpm'>('timestamp');
-    const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
+    // Filter & Sort State derived from URL
+    const sortBy = (searchParams.get('sort') as 'timestamp' | 'wpm') || 'timestamp';
+    const filterDifficulty = searchParams.get('difficulty') || 'all';
+
     const [tableLoading, setTableLoading] = useState(false);
 
     // Pagination state
@@ -71,6 +75,7 @@ export const Profile = () => {
         };
         fetchHistory();
     }, [user, sortBy, filterDifficulty]);
+
     const handleLoadMore = async () => {
         if (!user || !lastDoc) return;
 
@@ -86,6 +91,12 @@ export const Profile = () => {
         } finally {
             setLoadingMore(false);
         }
+    };
+
+    const updateParams = (key: string, value: string) => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set(key, value);
+        setSearchParams(newParams);
     };
 
     if (loading) {
@@ -152,10 +163,10 @@ export const Profile = () => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => setSortBy('timestamp')}>
+                                    <DropdownMenuItem onClick={() => updateParams('sort', 'timestamp')}>
                                         Recent {sortBy === 'timestamp' && <Check className="ml-auto h-4 w-4" />}
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setSortBy('wpm')}>
+                                    <DropdownMenuItem onClick={() => updateParams('sort', 'wpm')}>
                                         Best WPM {sortBy === 'wpm' && <Check className="ml-auto h-4 w-4" />}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -170,16 +181,16 @@ export const Profile = () => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => setFilterDifficulty('all')}>
+                                    <DropdownMenuItem onClick={() => updateParams('difficulty', 'all')}>
                                         All {filterDifficulty === 'all' && <Check className="ml-auto h-4 w-4" />}
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setFilterDifficulty('easy')}>
+                                    <DropdownMenuItem onClick={() => updateParams('difficulty', 'easy')}>
                                         Easy {filterDifficulty === 'easy' && <Check className="ml-auto h-4 w-4" />}
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setFilterDifficulty('medium')}>
+                                    <DropdownMenuItem onClick={() => updateParams('difficulty', 'medium')}>
                                         Medium {filterDifficulty === 'medium' && <Check className="ml-auto h-4 w-4" />}
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setFilterDifficulty('hard')}>
+                                    <DropdownMenuItem onClick={() => updateParams('difficulty', 'hard')}>
                                         Hard {filterDifficulty === 'hard' && <Check className="ml-auto h-4 w-4" />}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>

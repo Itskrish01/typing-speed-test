@@ -70,12 +70,10 @@ export const Home = () => {
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Prevent Tab from moving focus away during active game
-            if (e.key === 'Tab') {
-                if (!isFinished) {
-                    e.preventDefault();
-                    handleRestart();
-                }
+            // Prevent Tab from moving focus away during active game only
+            if (e.key === 'Tab' && isActive) {
+                e.preventDefault();
+                handleRestart();
             }
 
             if (e.key === 'Enter' && isFinished) {

@@ -1,3 +1,4 @@
+import { createUserProfile } from "./firestore-helpers";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -69,7 +70,13 @@ export const createGuestAccount = async () => {
         const email = `${username}@tapixo.guest.com`;
         const password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-        return await signupWithEmail(email, password, username);
+        const { user, error } = await signupWithEmail(email, password, username);
+
+        if (user) {
+            await createUserProfile(user, username);
+        }
+
+        return { user, error };
     } catch (error) {
         console.error("Error creating guest account:", error);
         return { user: null, error: "Failed to create guest account. Please try again." };

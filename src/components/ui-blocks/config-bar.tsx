@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
@@ -18,6 +18,8 @@ export const ConfigBar = () => {
     const { isActive } = useGameStatus();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const difficulties = ['easy', 'medium', 'hard', 'custom'] as const;
     const categories = ['words', 'quotes', 'lyrics', 'code'] as const;
     const languages = ['javascript', 'python', 'java', 'c++', 'c#', 'sql', 'html', 'css'] as const;
@@ -25,6 +27,35 @@ export const ConfigBar = () => {
     const [isCustomOpen, setIsCustomOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
     const dialogRef = useRef<HTMLDivElement>(null);
+
+    // Initial sync from URL
+    useEffect(() => {
+        const diffParam = searchParams.get('difficulty');
+        const modeParam = searchParams.get('mode');
+        const catParam = searchParams.get('category');
+        const durationParam = searchParams.get('duration');
+        const langParam = searchParams.get('language');
+
+        if (diffParam && difficulties.includes(diffParam as any)) setDifficulty(diffParam as any);
+        if (modeParam && (modeParam === 'timed' || modeParam === 'passage')) setMode(modeParam);
+        if (catParam && categories.includes(catParam as any)) setCategory(catParam as any);
+        if (durationParam && !isNaN(Number(durationParam))) setTimedDuration(Number(durationParam));
+        if (langParam && languages.includes(langParam as any)) setLanguage(langParam as any);
+
+    }, []);
+
+    // Sync to URL on changes
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        params.set('difficulty', difficulty);
+        params.set('mode', mode);
+        params.set('category', category);
+        if (mode === 'timed') params.set('duration', timedDuration.toString());
+        if (category === 'code') params.set('language', language);
+
+        setSearchParams(params, { replace: true });
+    }, [difficulty, mode, category, timedDuration, language]);
+
 
     // Reset category from lyrics if user is not logged in
     useEffect(() => {
@@ -68,7 +99,7 @@ export const ConfigBar = () => {
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 w-full">
                 {/* Category Selector */}
                 <div className="flex items-center gap-2">
-                    <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                    <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
                         {categories.map((cat) => (
                             <Button
                                 key={cat}
@@ -76,10 +107,10 @@ export const ConfigBar = () => {
                                 size="sm"
                                 onClick={() => handleCategoryClick(cat)}
                                 className={cn(
-                                    "capitalize h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                    "capitalize h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
                                     category === cat
-                                        ? "shadow-md bg-primary text-primary-foreground"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                        ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                                 )}
                             >
                                 {cat}
@@ -92,7 +123,7 @@ export const ConfigBar = () => {
                             <div className="h-6 w-px bg-border hidden sm:block" />
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="h-7 sm:h-8 gap-1 transition-all">
+                                    <Button variant="outline" size="sm" className="h-8 gap-1 transition-all">
                                         <span className="capitalize">{language}</span>
                                         <ChevronDown className="w-3 h-3 opacity-50" />
                                     </Button>
@@ -116,14 +147,14 @@ export const ConfigBar = () => {
                 {/* Difficulty Selector - Hidden for lyrics, show Song Search instead */}
                 {category === 'lyrics' ? (
                     <div className="flex items-center gap-2">
-                        <SongSearch 
-                            onSongSelect={handleSongSelect} 
+                        <SongSearch
+                            onSongSelect={handleSongSelect}
                             disabled={isActive}
                         />
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
-                        <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                        <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
                             {difficulties.map((diff) => (
                                 <Button
                                     key={diff}
@@ -137,10 +168,10 @@ export const ConfigBar = () => {
                                         }
                                     }}
                                     className={cn(
-                                        "capitalize h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                        "capitalize h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
                                         difficulty === diff
-                                            ? "shadow-md bg-primary text-primary-foreground"
-                                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                            ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                                     )}
                                 >
                                     {diff}
@@ -154,17 +185,17 @@ export const ConfigBar = () => {
 
                 {/* Mode Selector */}
                 <div className="flex items-center gap-2">
-                    <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                    <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
                         <Button
                             variant={mode === 'timed' ? "default" : "ghost"}
                             size="sm"
                             onClick={() => setMode('timed')}
                             disabled={difficulty === 'custom'}
                             className={cn(
-                                "h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
                                 mode === 'timed'
-                                    ? "shadow-md bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                    ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                             )}
                         >
                             <span className="hidden sm:inline">Timed</span>
@@ -175,10 +206,10 @@ export const ConfigBar = () => {
                             size="sm"
                             onClick={() => setMode('passage')}
                             className={cn(
-                                "h-7 sm:h-8 px-2 sm:px-4 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
                                 mode === 'passage'
-                                    ? "shadow-md bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                    ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                             )}
                         >
                             Words
@@ -188,7 +219,7 @@ export const ConfigBar = () => {
                     {mode === 'timed' && (
                         <>
                             <div className="h-6 w-px bg-border hidden sm:block" />
-                            <div className="flex bg-secondary/30 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
+                            <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
                                 {durations.map((duration) => (
                                     <Button
                                         key={duration}
@@ -196,10 +227,10 @@ export const ConfigBar = () => {
                                         size="sm"
                                         onClick={() => setTimedDuration(duration)}
                                         className={cn(
-                                            "h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0 min-w-[3rem]",
+                                            "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0 min-w-[3rem]",
                                             timedDuration === duration
-                                                ? "shadow-md bg-primary text-primary-foreground"
-                                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                                ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                                         )}
                                     >
                                         {duration}s

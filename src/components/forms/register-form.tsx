@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { UserPlus, User } from "lucide-react";
 import { signupWithEmail, createGuestAccount } from "@/lib/auth-helpers";
 import { createUserProfile, checkUsernameAvailability } from "@/lib/firestore-helpers";
@@ -19,24 +19,34 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const verifyEmailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const verifyPasswordRef = useRef<HTMLInputElement>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
         if (!username.trim()) {
             setError("Username is required.");
+            usernameRef.current?.focus();
             return;
         }
         if (email !== verifyEmail) {
             setError("Emails do not match.");
+            verifyEmailRef.current?.focus();
             return;
         }
         if (password !== verifyPassword) {
             setError("Passwords do not match.");
+            verifyPasswordRef.current?.focus();
             return;
         }
         if (password.length < 6) {
             setError("Password must be at least 6 characters.");
+            passwordRef.current?.focus();
             return;
         }
 
@@ -47,6 +57,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
 
             if (!isAvailable) {
                 setError("Username is already taken.");
+                usernameRef.current?.focus();
                 setLoading(false);
                 return;
             }
@@ -76,6 +87,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <AuthInput
+                    ref={usernameRef}
                     id="reg-username"
                     type="text"
                     placeholder="username"
@@ -84,6 +96,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                     autoComplete="username"
                 />
                 <AuthInput
+                    ref={emailRef}
                     id="reg-email"
                     type="email"
                     placeholder="email"
@@ -92,6 +105,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                     autoComplete="email"
                 />
                 <AuthInput
+                    ref={verifyEmailRef}
                     id="reg-verify-email"
                     type="email"
                     placeholder="verify email"
@@ -100,6 +114,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                     autoComplete="off"
                 />
                 <AuthInput
+                    ref={passwordRef}
                     id="reg-password"
                     type="password"
                     placeholder="password"
@@ -108,6 +123,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                     autoComplete="new-password"
                 />
                 <AuthInput
+                    ref={verifyPasswordRef}
                     id="reg-verify-password"
                     type="password"
                     placeholder="verify password"

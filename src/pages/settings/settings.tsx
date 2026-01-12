@@ -31,7 +31,7 @@ export const Settings = () => {
                     key={t.id}
                     onClick={() => handleThemeChange(t.id as Theme)}
                     className={cn(
-                        "relative h-14 w-full rounded-xl flex items-center justify-center text-xs font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] active:scale-95 shadow-sm hover:shadow-md",
+                        "relative h-14 w-full rounded-xl flex items-center justify-center text-xs font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] active:scale-95 shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2",
                         t.bg,
                         t.text,
                         theme === t.id && "ring-2 ring-primary ring-offset-2 ring-offset-background z-10"

@@ -31,7 +31,7 @@ const MuteButton = () => {
 };
 
 export const Header = () => {
-    const { difficulty } = useGameConfig();
+    const { difficulty, setDifficulty } = useGameConfig();
     const personalBests = usePersonalBests();
     const { user } = useAuth();
 
@@ -45,13 +45,13 @@ export const Header = () => {
 
 
                     {/* Title - Hidden on mobile, visible on sm+ */}
-                    <h1 className="hidden sm:block text-2xl font-bold tracking-tight text-foreground">
+                    <span className="hidden sm:block text-2xl font-bold tracking-tight text-foreground">
                         Tapixo
-                    </h1>
+                    </span>
                     {/* Mobile Title */}
-                    <h1 className="sm:hidden text-2xl font-bold tracking-tight text-foreground">
+                    <span className="sm:hidden text-2xl font-bold tracking-tight text-foreground">
                         TP
-                    </h1>
+                    </span>
                 </div>
                 {/* Subtitle - Hidden on mobile */}
                 <p className="text-sm text-muted-foreground hidden sm:block">
@@ -92,15 +92,15 @@ export const Header = () => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem className="flex justify-between cursor-default">
+                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('easy')}>
                             <span className="font-medium text-chart-2">Easy</span>
                             <span className="font-bold">{personalBests.easy?.wpm || 0} wpm</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex justify-between cursor-default">
+                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('medium')}>
                             <span className="font-medium text-chart-3">Medium</span>
                             <span className="font-bold">{personalBests.medium?.wpm || 0} wpm</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex justify-between cursor-default">
+                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('hard')}>
                             <span className="font-medium text-destructive">Hard</span>
                             <span className="font-bold">{personalBests.hard?.wpm || 0} wpm</span>
                         </DropdownMenuItem>
@@ -110,12 +110,12 @@ export const Header = () => {
                 <div className="w-px h-8 bg-border hidden sm:block" />
 
                 {user && (
-                    <Link to="/settings">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground hover:text-foreground">
+                        <Link to="/settings">
                             <SettingsIcon className="w-5 h-5" />
                             <span className="sr-only">Settings</span>
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 )}
 
 

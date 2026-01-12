@@ -72,7 +72,7 @@ export const ActivityHeatmap = ({ history }: ActivityHeatmapProps) => {
                             {[0, 1, 2, 3, 4].map(l => (
                                 <div key={l} className={cn(
                                     "w-3 h-3 rounded-sm",
-                                    l === 0 ? "bg-muted/20" : "bg-primary",
+                                    l === 0 ? "bg-secondary" : "bg-primary",
                                     l === 1 && "opacity-40",
                                     l === 2 && "opacity-60",
                                     l === 3 && "opacity-80",
@@ -96,7 +96,7 @@ export const ActivityHeatmap = ({ history }: ActivityHeatmapProps) => {
                                                 <div
                                                     className={cn(
                                                         "w-4 h-4 rounded-[2px] transition-colors hover:ring-1 hover:ring-foreground/50",
-                                                        day.count === 0 ? "bg-muted" : "bg-primary",
+                                                        day.count === 0 ? "bg-secondary" : "bg-primary",
                                                         day.count > 0 && day.level === 1 && "opacity-40",
                                                         day.count > 0 && day.level === 2 && "opacity-60",
                                                         day.count > 0 && day.level === 3 && "opacity-80",

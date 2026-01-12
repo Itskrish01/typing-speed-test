@@ -20,6 +20,10 @@ const DARK_THEMES = [
     { id: "monochrome", name: "Monochrome", bg: "bg-black", text: "text-white" },
     { id: "matrix", name: "Matrix", bg: "bg-black", text: "text-[#00ff00]" },
     { id: "synthwave", name: "Synthwave", bg: "bg-[#240046]", text: "text-[#f72585]" },
+    { id: "cyberpunk", name: "Cyberpunk", bg: "bg-[#000b1e]", text: "text-[#fee715]" },
+    { id: "dracula", name: "Dracula", bg: "bg-[#282a36]", text: "text-[#f8f8f2]" },
+    { id: "nord", name: "Nord", bg: "bg-[#2e3440]", text: "text-[#d8dee9]" },
+    { id: "dim", name: "Dim", bg: "bg-[#1f2937]", text: "text-gray-100" },
 ] as const;
 
 const LIGHT_THEMES = [

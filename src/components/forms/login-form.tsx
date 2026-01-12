@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { LogIn, User } from "lucide-react";
 import { loginWithEmail, createGuestAccount } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,25 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
+        if (!email.trim()) {
+            setError("Email is required");
+            emailRef.current?.focus();
+            return;
+        }
+
+        if (!password) {
+            setError("Password is required");
+            passwordRef.current?.focus();
+            return;
+        }
+
         setLoading(true);
 
         const { error: authError } = await loginWithEmail(email, password, rememberMe);
@@ -27,6 +43,12 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         if (authError) {
             setError(authError);
             setLoading(false);
+            // If auth error, usually focus password to let user retry
+            if (authError.toLowerCase().includes("password")) {
+                passwordRef.current?.focus();
+            } else {
+                emailRef.current?.focus();
+            }
         } else {
             onSuccess();
         }
@@ -41,6 +63,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <AuthInput
+                    ref={emailRef}
                     id="login-email"
                     type="email"
                     placeholder="email"
@@ -49,6 +72,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
                     autoComplete="email"
                 />
                 <AuthInput
+                    ref={passwordRef}
                     id="login-password"
                     type="password"
                     placeholder="password"

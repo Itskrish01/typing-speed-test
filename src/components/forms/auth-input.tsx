@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface AuthInputProps {
@@ -10,7 +11,7 @@ interface AuthInputProps {
     className?: string;
 }
 
-export const AuthInput = ({
+export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(({
     id,
     type,
     placeholder,
@@ -18,8 +19,9 @@ export const AuthInput = ({
     onChange,
     autoComplete,
     className,
-}: AuthInputProps) => (
+}, ref) => (
     <input
+        ref={ref}
         id={id}
         type={type}
         placeholder={placeholder}
@@ -31,4 +33,5 @@ export const AuthInput = ({
             className
         )}
     />
-);
+));
+AuthInput.displayName = "AuthInput";
