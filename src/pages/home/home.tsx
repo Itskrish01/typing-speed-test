@@ -116,6 +116,7 @@ export const Home = () => {
             saveTestResult(user.uid, {
                 wpm: results.wpm,
                 accuracy: results.accuracy,
+                errors: results.errorCount,
                 difficulty,
                 mode,
                 category

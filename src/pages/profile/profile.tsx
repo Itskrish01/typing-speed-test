@@ -12,6 +12,13 @@ import { UsernameEditDialog } from "@/components/ui-blocks/username-edit-dialog"
 import { ProfileBanner } from "@/components/ui-blocks/profile-banner";
 import { LoadingSpinner } from "@/components/common";
 import type { DocumentSnapshot } from "firebase/firestore";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Filter, ArrowUpDown, Check } from "lucide-react";
 
 export const Profile = () => {
     const { user } = useAuth();
@@ -21,6 +28,11 @@ export const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
+    // Filter & Sort State
+    const [sortBy, setSortBy] = useState<'timestamp' | 'wpm'>('timestamp');
+    const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
+    const [tableLoading, setTableLoading] = useState(false);
+
     // Pagination state
     const [lastDoc, setLastDoc] = useState<DocumentSnapshot | null>(null);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -28,32 +40,43 @@ export const Profile = () => {
 
     const ITEMS_PER_PAGE = 10;
 
+    // 1. Fetch Profile & Stats (Independent of filters)
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchProfileData = async () => {
             if (user) {
-                // Initial load
-                const [historyResult, statsResult, profileData] = await Promise.all([
-                    getPaginatedHistory(user.uid, ITEMS_PER_PAGE),
+                const [statsResult, profileData] = await Promise.all([
                     getUserStatsHistory(user.uid),
                     ensureUserProfile(user)
                 ]);
-
-                setHistory(historyResult.data);
-                setLastDoc(historyResult.lastDoc);
                 setStatsHistory(statsResult);
                 setProfile(profileData);
-                setHasMore(historyResult.data.length === ITEMS_PER_PAGE);
                 setLoading(false);
             }
         };
-        fetchData();
+        fetchProfileData();
     }, [user]);
+
+    // 2. Fetch History List (Dependent on filters)
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (user) {
+                setTableLoading(true);
+                // Reset list on filter change
+                const result = await getPaginatedHistory(user.uid, ITEMS_PER_PAGE, null, sortBy, filterDifficulty);
+                setHistory(result.data);
+                setLastDoc(result.lastDoc);
+                setHasMore(result.data.length === ITEMS_PER_PAGE);
+                setTableLoading(false);
+            }
+        };
+        fetchHistory();
+    }, [user, sortBy, filterDifficulty]);
     const handleLoadMore = async () => {
         if (!user || !lastDoc) return;
 
         setLoadingMore(true);
         try {
-            const nextBatch = await getPaginatedHistory(user.uid, ITEMS_PER_PAGE, lastDoc);
+            const nextBatch = await getPaginatedHistory(user.uid, ITEMS_PER_PAGE, lastDoc, sortBy, filterDifficulty);
 
             setHistory(prev => [...prev, ...nextBatch.data]);
             setLastDoc(nextBatch.lastDoc);
@@ -115,8 +138,62 @@ export const Profile = () => {
                 </div>
 
                 <div className="space-y-4">
-                    <h2 className="text-xl font-semibold px-1">Recent Tests</h2>
-                    <HistoryTable data={history} />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-1">
+                        <h2 className="text-xl font-semibold">Recent Tests</h2>
+
+                        <div className="flex items-center gap-2">
+                            {/* Sort Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="h-8 gap-2">
+                                        <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+                                        <span className="hidden sm:inline">Sort:</span>
+                                        {sortBy === 'timestamp' ? 'Recent' : 'Best WPM'}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setSortBy('timestamp')}>
+                                        Recent {sortBy === 'timestamp' && <Check className="ml-auto h-4 w-4" />}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSortBy('wpm')}>
+                                        Best WPM {sortBy === 'wpm' && <Check className="ml-auto h-4 w-4" />}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            {/* Difficulty Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="h-8 gap-2 text-xs">
+                                        <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                                        <span className="capitalize">{filterDifficulty === 'all' ? 'All Difficulties' : filterDifficulty}</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setFilterDifficulty('all')}>
+                                        All {filterDifficulty === 'all' && <Check className="ml-auto h-4 w-4" />}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setFilterDifficulty('easy')}>
+                                        Easy {filterDifficulty === 'easy' && <Check className="ml-auto h-4 w-4" />}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setFilterDifficulty('medium')}>
+                                        Medium {filterDifficulty === 'medium' && <Check className="ml-auto h-4 w-4" />}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setFilterDifficulty('hard')}>
+                                        Hard {filterDifficulty === 'hard' && <Check className="ml-auto h-4 w-4" />}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    </div>
+
+                    {tableLoading ? (
+                        <div className="py-12 flex justify-center">
+                            <LoadingSpinner />
+                        </div>
+                    ) : (
+                        <HistoryTable data={history} />
+                    )}
 
                     {hasMore && (
                         <div className="flex justify-center pt-2">

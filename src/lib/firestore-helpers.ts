@@ -20,6 +20,7 @@ export interface TestResult {
     userId: string;
     wpm: number;
     accuracy: number;
+    errors: number;
     difficulty: string;
     mode: string;
     category: string;
@@ -197,14 +198,33 @@ export const getUserHistory = async (userId: string, limitCount = 50): Promise<H
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HistoryEntry));
 };
 
-export const getPaginatedHistory = async (userId: string, limitCount: number, lastDoc: any = null): Promise<{ data: HistoryEntry[]; lastDoc: any }> => {
+export const getPaginatedHistory = async (
+    userId: string,
+    limitCount: number,
+    lastDoc: any = null,
+    sortBy: 'timestamp' | 'wpm' = 'timestamp',
+    difficulty?: string
+): Promise<{ data: HistoryEntry[]; lastDoc: any }> => {
     const historyRef = collection(db, "history");
-    let q = query(
-        historyRef,
-        where("userId", "==", userId),
-        orderBy("timestamp", "desc"),
-        limit(limitCount)
-    );
+
+    // Build constraints
+    const constraints: any[] = [
+        where("userId", "==", userId)
+    ];
+
+    if (difficulty && difficulty !== 'all') {
+        constraints.push(where("difficulty", "==", difficulty));
+    }
+
+    if (sortBy === 'wpm') {
+        constraints.push(orderBy("wpm", "desc"));
+    } else {
+        constraints.push(orderBy("timestamp", "desc"));
+    }
+
+    constraints.push(limit(limitCount));
+
+    let q = query(historyRef, ...constraints);
 
     if (lastDoc) {
         q = query(q, startAfter(lastDoc));
