@@ -12,8 +12,6 @@ import {
 } from "../../store/game-store";
 import { useTypingSound } from "../../hooks/use-sound";
 import { PageLayout } from "@/components/layout/page-layout";
-import { Header } from "@/components/ui-blocks/header";
-import { ThemeFooter } from "@/components/ui-blocks/theme-footer";
 import { StatsBar } from "@/components/ui-blocks/stats-bar";
 import { ConfigBar } from "@/components/ui-blocks/config-bar";
 import { TypingArea } from "@/components/ui-blocks/typing-area";

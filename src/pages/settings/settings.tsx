@@ -8,29 +8,12 @@ import { useTypingSound, type SoundType } from "@/hooks/use-sound";
 import { Check, Volume2, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const THEMES: { id: Theme; name: string; bg: string; text: string }[] = [
-    { id: "light", name: "Light", bg: "bg-white", text: "text-slate-900" },
-    { id: "dark", name: "Dark", bg: "bg-slate-900", text: "text-white" },
-    { id: "system", name: "System", bg: "bg-slate-200", text: "text-slate-900" },
-    { id: "espresso", name: "Espresso", bg: "bg-[#3e2723]", text: "text-[#d7ccc8]" },
-    { id: "midnight", name: "Midnight", bg: "bg-[#0d47a1]", text: "text-[#e3f2fd]" },
-    { id: "forest", name: "Forest", bg: "bg-[#1b5e20]", text: "text-[#e8f5e9]" },
-    { id: "ruby", name: "Ruby", bg: "bg-[#b71c1c]", text: "text-[#ffebee]" },
-    { id: "vscode", name: "VS Code", bg: "bg-[#1e1e1e]", text: "text-[#007acc]" },
-    { id: "monochrome", name: "Monochrome", bg: "bg-black", text: "text-white" },
-    { id: "matrix", name: "Matrix", bg: "bg-black", text: "text-[#00ff00]" },
-    { id: "synthwave", name: "Synthwave", bg: "bg-[#240046]", text: "text-[#f72585]" },
-    { id: "pastel-rose", name: "Pastel Rose", bg: "bg-[#ffe4ec]", text: "text-[#ffb3c6]" },
-    { id: "pastel-sky", name: "Pastel Sky", bg: "bg-[#e0f2fe]", text: "text-[#7dd3fc]" },
-    { id: "pastel-mint", name: "Pastel Mint", bg: "bg-[#dcfce7]", text: "text-[#86efac]" },
-    { id: "pastel-lavender", name: "Pastel Lavender", bg: "bg-[#ede9fe]", text: "text-[#c4b5fd]" },
-    { id: "pastel-peach", name: "Pastel Peach", bg: "bg-[#ffedd5]", text: "text-[#fdba74]" },
-];
+import { THEMES, type ThemeDefinition } from "@/lib/themes";
 
 export const Settings = () => {
     const { theme, setTheme } = useTheme();
     const { user } = useAuth();
-    const { currentSound, setSound, sounds } = useTypingSound();
+    const { currentSound, setSound, sounds, previewSound } = useTypingSound();
 
     const handleThemeChange = (newTheme: Theme) => {
         setTheme(newTheme);
@@ -40,6 +23,25 @@ export const Settings = () => {
             saveTheme(newTheme);
         }
     };
+
+    const renderThemeGrid = (themes: readonly ThemeDefinition[]) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {themes.map((t) => (
+                <button
+                    key={t.id}
+                    onClick={() => handleThemeChange(t.id as Theme)}
+                    className={cn(
+                        "relative h-14 w-full rounded-xl flex items-center justify-center text-xs font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] active:scale-95 shadow-sm hover:shadow-md",
+                        t.bg,
+                        t.text,
+                        theme === t.id && "ring-2 ring-primary ring-offset-2 ring-offset-background z-10"
+                    )}
+                >
+                    {t.name}
+                </button>
+            ))}
+        </div>
+    );
 
     return (
         <PageLayout>
@@ -55,21 +57,19 @@ export const Settings = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {THEMES.map((t) => (
-                            <button
-                                key={t.id}
-                                onClick={() => handleThemeChange(t.id)}
-                                className={cn(
-                                    "relative h-10 w-full rounded-md flex items-center justify-center text-xs font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] active:scale-95",
-                                    t.bg,
-                                    t.text,
-                                    theme === t.id && "ring-2 ring-primary ring-offset-2 ring-offset-background z-10"
-                                )}
-                            >
-                                {t.name}
-                            </button>
-                        ))}
+                    <div className="space-y-8">
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Base</h3>
+                            {renderThemeGrid(THEMES.base)}
+                        </div>
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Dark Settings</h3>
+                            {renderThemeGrid(THEMES.dark)}
+                        </div>
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Light Settings</h3>
+                            {renderThemeGrid(THEMES.light)}
+                        </div>
                     </div>
                 </div>
 
@@ -84,11 +84,14 @@ export const Settings = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {sounds.map((sound) => (
                             <button
                                 key={sound}
-                                onClick={() => setSound(sound)}
+                                onClick={() => {
+                                    setSound(sound);
+                                    previewSound(sound);
+                                }}
                                 className={cn(
                                     "group relative flex items-center justify-between p-4 rounded-xl border border-border/40 hover:border-border transition-all hover:bg-secondary/40",
                                     currentSound === sound && "ring-2 ring-primary border-primary bg-secondary/20"

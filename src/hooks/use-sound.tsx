@@ -12,6 +12,7 @@ interface SoundContextType {
     setSound: (sound: SoundType) => void;
     play: () => void;
     playError: () => void;
+    previewSound: (sound: SoundType) => void;
     muted: boolean;
     toggleMute: () => void;
     sounds: SoundType[];
@@ -106,10 +107,10 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [currentSound, loadSounds]);
 
-    const playError = useCallback(() => {
-        if (muted || currentSound === 'off' || !audioContextRef.current || !gainNodeRef.current) return;
+    const playSound = useCallback((type: SoundType) => {
+        if (muted || type === 'off' || !audioContextRef.current || !gainNodeRef.current) return;
 
-        const buffers = audioBuffersRef.current['error'];
+        const buffers = audioBuffersRef.current[type];
         if (!buffers || buffers.length === 0) return;
 
         if (audioContextRef.current.state === 'suspended') {
@@ -122,26 +123,31 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
 
         source.connect(gainNodeRef.current);
         source.start(0);
-    }, [currentSound, muted]);
+    }, [muted]);
+
+    const playError = useCallback(() => {
+        playSound('error');
+    }, [playSound]);
 
     const play = useCallback(() => {
-        if (muted || currentSound === 'off' || !audioContextRef.current || !gainNodeRef.current) return;
+        playSound(currentSound);
+    }, [playSound, currentSound]);
 
-        const buffers = audioBuffersRef.current[currentSound];
-        if (!buffers || buffers.length === 0) return;
+    const previewSound = useCallback(async (type: SoundType) => {
+        if (type === 'off') return;
 
-        if (audioContextRef.current.state === 'suspended') {
-            audioContextRef.current.resume().catch(() => { });
-        }
+        // Ensure sound is loaded before playing
+        await loadSounds(type);
 
-        const randomBuffer = buffers[Math.floor(Math.random() * buffers.length)];
-        const source = audioContextRef.current.createBufferSource();
-        source.buffer = randomBuffer;
+        // We bypass the 'muted' check for preview? Or respect it?
+        // User request: "preview on selecting... so user know what... they gonna hear"
+        // If muted, they won't hear it. But usually preview forces sound.
+        // Let's use internal playSound logic which respects mute.
+        // If user wants to hear it, they should unmute.
+        // However, we need to pass the type explicitly.
 
-        // Connect to gain node (volume) instead of destination directly
-        source.connect(gainNodeRef.current);
-        source.start(0);
-    }, [currentSound, muted]);
+        playSound(type);
+    }, [loadSounds, playSound]);
 
     const setSound = useCallback(async (newSound: SoundType) => {
         setCurrentSound(newSound);
@@ -163,7 +169,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
     const sounds = ['off', ...SOUND_TYPES] as SoundType[];
 
     return (
-        <SoundContext.Provider value={{ currentSound, setSound, play, playError, muted, toggleMute, sounds }}>
+        <SoundContext.Provider value={{ currentSound, setSound, play, playError, previewSound, muted, toggleMute, sounds }}>
             {children}
         </SoundContext.Provider>
     );

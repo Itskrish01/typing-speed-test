@@ -68,25 +68,10 @@ export const clearGameConfig = (): void => {
 
 const THEME_STORAGE_KEY = 'theme';
 
-export type Theme =
-    | "dark"
-    | "light"
-    | "system"
-    | "espresso"
-    | "midnight"
-    | "forest"
-    | "ruby"
-    | "vscode"
-    | "monochrome"
-    | "matrix"
-    | "synthwave"
-    | "pastel-rose"
-    | "pastel-sky"
-    | "pastel-mint"
-    | "pastel-lavender"
-    | "pastel-peach";
+import { type Theme, ALL_THEMES } from '@/lib/themes';
 
 const DEFAULT_THEME: Theme = 'system';
+
 
 /**
  * Saves theme preference to localStorage

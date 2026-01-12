@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTheme, type Theme } from "@/components/theme-provider";
+import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/context/auth-context";
 import { updateUserTheme } from "@/lib/firestore-helpers";
 import { saveTheme } from "@/lib/storage-helpers";
@@ -14,30 +14,7 @@ import {
     CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-
-// Reusing themes from settings (should ideally be shared constant but for now copying or importing if possible)
-// To avoid circular or messy imports, I'll define the minimal needed functionality or I should export THEMES from settings?
-// Better to export THEMES from a shared constant file, but for speed I will duplicate the list structure since I just refactored settings.
-// Actually, let's just duplicate the list briefly or cleaner: define it here.
-
-const THEMES: { id: Theme; name: string; bg: string; text: string }[] = [
-    { id: "light", name: "Light", bg: "bg-white", text: "text-slate-900" },
-    { id: "dark", name: "Dark", bg: "bg-slate-900", text: "text-white" },
-    { id: "system", name: "System", bg: "bg-slate-200", text: "text-slate-900" },
-    { id: "espresso", name: "Espresso", bg: "bg-[#3e2723]", text: "text-[#d7ccc8]" },
-    { id: "midnight", name: "Midnight", bg: "bg-[#0d47a1]", text: "text-[#e3f2fd]" },
-    { id: "forest", name: "Forest", bg: "bg-[#1b5e20]", text: "text-[#e8f5e9]" },
-    { id: "ruby", name: "Ruby", bg: "bg-[#b71c1c]", text: "text-[#ffebee]" },
-    { id: "vscode", name: "VS Code", bg: "bg-[#1e1e1e]", text: "text-[#007acc]" },
-    { id: "monochrome", name: "Monochrome", bg: "bg-black", text: "text-white" },
-    { id: "matrix", name: "Matrix", bg: "bg-black", text: "text-[#00ff00]" },
-    { id: "synthwave", name: "Synthwave", bg: "bg-[#240046]", text: "text-[#f72585]" },
-    { id: "pastel-rose", name: "Pastel Rose", bg: "bg-[#ffe4ec]", text: "text-[#ffb3c6]" },
-    { id: "pastel-sky", name: "Pastel Sky", bg: "bg-[#e0f2fe]", text: "text-[#7dd3fc]" },
-    { id: "pastel-mint", name: "Pastel Mint", bg: "bg-[#dcfce7]", text: "text-[#86efac]" },
-    { id: "pastel-lavender", name: "Pastel Lavender", bg: "bg-[#ede9fe]", text: "text-[#c4b5fd]" },
-    { id: "pastel-peach", name: "Pastel Peach", bg: "bg-[#ffedd5]", text: "text-[#fdba74]" },
-];
+import { THEMES, ALL_THEMES, type ThemeDefinition, type Theme } from "@/lib/themes";
 
 export const ThemeFooter = () => {
     const { theme, setTheme } = useTheme();
@@ -66,7 +43,32 @@ export const ThemeFooter = () => {
         }
     };
 
-    const currentTheme = THEMES.find(t => t.id === theme) || THEMES[0];
+    const currentTheme = ALL_THEMES.find(t => t.id === theme) || ALL_THEMES[0];
+
+    const renderThemeItems = (themes: readonly ThemeDefinition[]) => (
+        <>
+            {themes.map((t) => (
+                <CommandItem
+                    key={t.id}
+                    value={t.name}
+                    onSelect={() => {
+                        handleThemeChange(t.id as Theme);
+                        setOpen(false);
+                    }}
+                    className={cn(
+                        "cursor-pointer",
+                        theme === t.id && "bg-accent/50"
+                    )}
+                >
+                    <div className="flex items-center flex-1 gap-3">
+                        <div className={cn("h-4 w-4 rounded-full border border-border/20", t.bg)} />
+                        <span>{t.name}</span>
+                    </div>
+                    {theme === t.id && <Check className="ml-auto h-4 w-4 duration-200" />}
+                </CommandItem>
+            ))}
+        </>
+    );
 
     return (
         <>
@@ -104,27 +106,14 @@ export const ThemeFooter = () => {
                         />
                         <CommandList>
                             <CommandEmpty>No theme found.</CommandEmpty>
-                            <CommandGroup heading="Themes">
-                                {THEMES.map((t) => (
-                                    <CommandItem
-                                        key={t.id}
-                                        value={t.name}
-                                        onSelect={() => {
-                                            handleThemeChange(t.id);
-                                            setOpen(false);
-                                        }}
-                                        className={cn(
-                                            "cursor-pointer",
-                                            theme === t.id && "bg-accent/50"
-                                        )}
-                                    >
-                                        <div className="flex items-center flex-1 gap-3">
-                                            <div className={cn("h-4 w-4 rounded-full border border-border/20", t.bg)} />
-                                            <span>{t.name}</span>
-                                        </div>
-                                        {theme === t.id && <Check className="ml-auto h-4 w-4 duration-200" />}
-                                    </CommandItem>
-                                ))}
+                            <CommandGroup heading="Base">
+                                {renderThemeItems(THEMES.base)}
+                            </CommandGroup>
+                            <CommandGroup heading="Dark">
+                                {renderThemeItems(THEMES.dark)}
+                            </CommandGroup>
+                            <CommandGroup heading="Light">
+                                {renderThemeItems(THEMES.light)}
                             </CommandGroup>
                         </CommandList>
                     </Command>

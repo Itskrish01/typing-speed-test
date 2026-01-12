@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { loadTheme, type Theme } from "../lib/storage-helpers"
+import { loadTheme } from "@/lib/storage-helpers"
+import { type Theme, THEMES, ALL_THEMES, isDarkTheme } from "@/lib/themes"
 
 export type { Theme };
 
@@ -21,9 +22,6 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
-// Themes that count as "dark mode" for Tailwind
-const DARK_THEMES = ["dark", "espresso", "midnight", "forest", "ruby", "vscode", "monochrome", "matrix", "synthwave"];
-
 export function ThemeProvider({
     children,
     defaultTheme = "system",
@@ -31,7 +29,9 @@ export function ThemeProvider({
     const [theme, setTheme] = useState<Theme>(
         () => {
             const storedTheme = loadTheme();
-            return storedTheme !== 'system' ? storedTheme : defaultTheme;
+            // Validate stored theme
+            const isValidTheme = ALL_THEMES.some(t => t.id === storedTheme);
+            return isValidTheme && storedTheme !== 'system' ? storedTheme : defaultTheme;
         }
     )
 
@@ -54,7 +54,7 @@ export function ThemeProvider({
 
         root.setAttribute("data-theme", theme)
 
-        if (DARK_THEMES.includes(theme)) {
+        if (isDarkTheme(theme)) {
             root.classList.add("dark")
         } else {
             root.classList.add("light")

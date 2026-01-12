@@ -11,17 +11,7 @@ import { ProfileBanner } from "@/components/ui-blocks/profile-banner";
 import { StatsOverview } from "@/components/ui-blocks/stats-overview";
 import { LoadingSpinner, NotFound } from "@/components/common";
 
-const DARK_THEMES = [
-    "dark",
-    "espresso",
-    "midnight",
-    "forest",
-    "ruby",
-    "vscode",
-    "monochrome",
-    "matrix",
-    "synthwave",
-];
+import { THEMES, isDarkTheme } from "@/lib/themes";
 
 const getDisplayName = (profile: UserProfile): string => {
     return profile.username || profile.displayName || profile.email?.split("@")[0] || "User";
@@ -83,7 +73,7 @@ export const PublicProfileCard = () => {
     const displayName = getDisplayName(profile);
     const joinDate = formatJoinDate(profile);
     const userTheme = profile.themePreference || "dark";
-    const isDark = DARK_THEMES.includes(userTheme);
+    const isDark = isDarkTheme(userTheme);
 
     return (
         <div className={isDark ? "dark" : ""} data-theme={userTheme}>
