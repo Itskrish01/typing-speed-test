@@ -63,7 +63,12 @@ export const Header = () => {
 
             {/* Right side controls */}
             <div className="flex items-center gap-2 sm:gap-2">
-                <MuteButton />
+
+                {user && (
+                    <>
+                        <MuteButton />
+                    </>
+                )}
                 {/* Personal Best Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
