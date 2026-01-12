@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { HistoryTable } from "@/components/ui-blocks/history-table";
-import { getPaginatedHistory, ensureUserProfile, type UserProfile, type HistoryEntry } from "@/lib/firestore-helpers";
+import { getPaginatedHistory, getUserStatsHistory, ensureUserProfile, type UserProfile, type HistoryEntry } from "@/lib/firestore-helpers";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Header } from "@/components/ui-blocks/header";
 import { ShareProfile } from "@/components/ui-blocks/share-profile";
@@ -15,7 +15,8 @@ import type { DocumentSnapshot } from "firebase/firestore";
 
 export const Profile = () => {
     const { user } = useAuth();
-    const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [history, setHistory] = useState<HistoryEntry[]>([]); // For list
+    const [statsHistory, setStatsHistory] = useState<HistoryEntry[]>([]); // For heatmap/stats
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -31,13 +32,15 @@ export const Profile = () => {
         const fetchData = async () => {
             if (user) {
                 // Initial load
-                const [historyResult, profileData] = await Promise.all([
+                const [historyResult, statsResult, profileData] = await Promise.all([
                     getPaginatedHistory(user.uid, ITEMS_PER_PAGE),
+                    getUserStatsHistory(user.uid),
                     ensureUserProfile(user)
                 ]);
 
                 setHistory(historyResult.data);
                 setLastDoc(historyResult.lastDoc);
+                setStatsHistory(statsResult);
                 setProfile(profileData);
                 setHasMore(historyResult.data.length === ITEMS_PER_PAGE);
                 setLoading(false);
@@ -45,7 +48,6 @@ export const Profile = () => {
         };
         fetchData();
     }, [user]);
-
     const handleLoadMore = async () => {
         if (!user || !lastDoc) return;
 
@@ -66,12 +68,11 @@ export const Profile = () => {
     if (loading) {
         return <LoadingSpinner fullScreen />;
     }
-
     const displayName = profile?.username || profile?.displayName || 'User';
     const joinedDate = profile?.createdAt?.toDate
         ? profile.createdAt.toDate().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
         : 'Unknown';
-    const totalTests = history.length;
+    const totalTests = statsHistory.length; // Use stats history count (capped at 1000)
 
     const publicUrl = profile?.username
         ? `${window.location.origin}/u/${profile.username}`
@@ -101,7 +102,7 @@ export const Profile = () => {
                     />
                 )}
 
-                <StatsOverview history={history} personalBests={profile?.bestWpm} />
+                <StatsOverview history={statsHistory} personalBests={profile?.bestWpm} />
 
                 <div className="bg-secondary/20 rounded-xl p-6">
                     <div className="flex justify-between items-center mb-6">
@@ -110,7 +111,7 @@ export const Profile = () => {
                         </div>
                         <span className="text-xs text-muted-foreground opacity-50">last 12 months</span>
                     </div>
-                    <ActivityHeatmap history={history} />
+                    <ActivityHeatmap history={statsHistory} />
                 </div>
 
                 <div className="space-y-4">

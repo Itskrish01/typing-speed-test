@@ -217,6 +217,22 @@ export const getPaginatedHistory = async (userId: string, limitCount: number, la
     return { data, lastDoc: lastVisible };
 };
 
+export const getUserStatsHistory = async (userId: string): Promise<HistoryEntry[]> => {
+    // Fetch a large batch for stats/heatmap (e.g., last 1000 tests)
+    // This allows heatmap to show ~1 year of data for typical users (3 tests/day)
+    // and stats to be statistically significant.
+    const historyRef = collection(db, "history");
+    const q = query(
+        historyRef,
+        where("userId", "==", userId),
+        orderBy("timestamp", "desc"),
+        limit(1000)
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HistoryEntry));
+};
+
 // ------ Public Card Data ------
 // Reuses getUserProfile to get theme and bests.
 // Can be extended if we want specific card data separate from profile.
