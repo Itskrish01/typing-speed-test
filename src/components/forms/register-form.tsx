@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { UserPlus } from "lucide-react";
-import { signupWithEmail } from "@/lib/auth-helpers";
+import { UserPlus, User } from "lucide-react";
+import { signupWithEmail, createGuestAccount } from "@/lib/auth-helpers";
 import { createUserProfile, checkUsernameAvailability } from "@/lib/firestore-helpers";
 import { Button } from "@/components/ui/button";
 import { AuthInput } from "./auth-input";
@@ -121,6 +121,35 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 <Button type="submit" variant="secondary" className="mt-2 w-full" disabled={loading}>
                     <UserPlus size={16} />
                     <span>{loading ? "signing up..." : "sign up"}</span>
+                </Button>
+
+                <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border"></span>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                </div>
+
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => {
+                        setLoading(true);
+                        const { error } = await createGuestAccount();
+                        if (error) {
+                            setError(error);
+                            setLoading(false);
+                        } else {
+                            onSuccess();
+                        }
+                    }}
+                    disabled={loading}
+                >
+                    <User size={16} />
+                    <span>continue as guest</span>
                 </Button>
             </form>
         </div>

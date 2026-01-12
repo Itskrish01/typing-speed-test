@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { LogIn } from "lucide-react";
-import { loginWithEmail } from "@/lib/auth-helpers";
+import { LogIn, User } from "lucide-react";
+import { loginWithEmail, createGuestAccount } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/button";
 import { AuthInput } from "./auth-input";
 import { Checkbox } from "./checkbox";
@@ -64,6 +64,35 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
                 <Button type="submit" className="mt-2 w-full" disabled={loading}>
                     <LogIn size={16} />
                     <span>{loading ? "signing in..." : "sign in"}</span>
+                </Button>
+
+                <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border"></span>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                </div>
+
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => {
+                        setLoading(true);
+                        const { error } = await createGuestAccount();
+                        if (error) {
+                            setError(error);
+                            setLoading(false);
+                        } else {
+                            onSuccess();
+                        }
+                    }}
+                    disabled={loading}
+                >
+                    <User size={16} />
+                    <span>continue as guest</span>
                 </Button>
             </form>
         </div>

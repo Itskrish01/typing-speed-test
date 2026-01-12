@@ -61,3 +61,17 @@ export const logoutUser = async () => {
         return { error: getAuthErrorMessage(authError.code) };
     }
 };
+
+export const createGuestAccount = async () => {
+    try {
+        const randomId = Math.random().toString(36).substring(2, 10);
+        const username = `guest_${randomId}`;
+        const email = `${username}@tapixo.guest.com`;
+        const password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+        return await signupWithEmail(email, password, username);
+    } catch (error) {
+        console.error("Error creating guest account:", error);
+        return { user: null, error: "Failed to create guest account. Please try again." };
+    }
+};

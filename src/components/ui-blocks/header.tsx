@@ -1,6 +1,7 @@
 import { Trophy, ChevronDown, Settings as SettingsIcon } from "lucide-react";
 // import { ModeToggle } from "../mode-toggle";
 import { UserMenu } from "../layout/user-menu";
+import { useAuth } from "@/context/auth-context";
 import { usePersonalBests, useGameConfig } from "../../store/game-store";
 import {
     DropdownMenu,
@@ -32,6 +33,7 @@ const MuteButton = () => {
 export const Header = () => {
     const { difficulty } = useGameConfig();
     const personalBests = usePersonalBests();
+    const { user } = useAuth();
 
     const currentBest = difficulty !== 'custom' ? personalBests[difficulty]?.wpm || 0 : 0;
 
@@ -45,6 +47,10 @@ export const Header = () => {
                     {/* Title - Hidden on mobile, visible on sm+ */}
                     <h1 className="hidden sm:block text-2xl font-bold tracking-tight text-foreground">
                         Tapixo
+                    </h1>
+                    {/* Mobile Title */}
+                    <h1 className="sm:hidden text-2xl font-bold tracking-tight text-foreground">
+                        TP
                     </h1>
                 </div>
                 {/* Subtitle - Hidden on mobile */}
@@ -98,13 +104,14 @@ export const Header = () => {
 
                 <div className="w-px h-8 bg-border hidden sm:block" />
 
-                <Link to="/settings">
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
-                        <SettingsIcon className="w-5 h-5" />
-                        <span className="sr-only">Settings</span>
-                    </Button>
-                </Link>
-
+                {user && (
+                    <Link to="/settings">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+                            <SettingsIcon className="w-5 h-5" />
+                            <span className="sr-only">Settings</span>
+                        </Button>
+                    </Link>
+                )}
 
 
                 <UserMenu />
