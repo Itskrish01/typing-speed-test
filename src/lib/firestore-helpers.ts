@@ -42,6 +42,7 @@ export interface UserProfile {
         medium: number;
         hard: number;
     };
+    soundPreference?: string;
 }
 
 // ------ User Profile & Theme ------
@@ -63,7 +64,8 @@ export const createUserProfile = async (user: any, username: string) => {
                 easy: 0,
                 medium: 0,
                 hard: 0
-            }
+            },
+            soundPreference: "off"
         });
     }
 };
@@ -94,7 +96,8 @@ export const ensureUserProfile = async (user: any) => {
             displayName: user.displayName || user.email?.split('@')[0] || 'user',
             createdAt: serverTimestamp(),
             themePreference: "dark",
-            bestWpm: { easy: 0, medium: 0, hard: 0 }
+            bestWpm: { easy: 0, medium: 0, hard: 0 },
+            soundPreference: "off"
         };
         await setDoc(userRef, newProfile);
         return newProfile as UserProfile;
@@ -106,6 +109,11 @@ export const updateUserTheme = async (userId: string, theme: string) => {
     const userRef = doc(db, "users", userId);
     // Use setDoc with merge to create doc if it doesn't exist
     await setDoc(userRef, { themePreference: theme }, { merge: true });
+};
+
+export const updateUserSoundPreference = async (userId: string, sound: string) => {
+    const userRef = doc(db, "users", userId);
+    await setDoc(userRef, { soundPreference: sound }, { merge: true });
 };
 
 export const checkUsernameAvailability = async (username: string): Promise<boolean> => {

@@ -5,6 +5,9 @@ interface PageLayoutProps {
     className?: string;
 }
 
+import { Header } from "@/components/ui-blocks/header";
+import { ThemeFooter } from "@/components/ui-blocks/theme-footer";
+
 export const PageLayout = ({ children, className }: PageLayoutProps) => {
     return (
         <div className="min-h-screen w-full bg-background flex flex-col items-center transition-colors duration-300">
@@ -12,7 +15,11 @@ export const PageLayout = ({ children, className }: PageLayoutProps) => {
                 "w-full max-w-350 px-4 md:px-6 lg:px-8 flex flex-col flex-1",
                 className
             )}>
-                {children}
+                <Header />
+                <main className="flex-1 w-full flex flex-col">
+                    {children}
+                </main>
+                <ThemeFooter />
             </div>
         </div>
     );

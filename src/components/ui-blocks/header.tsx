@@ -1,5 +1,5 @@
-import { Trophy, ChevronDown } from "lucide-react";
-import { ModeToggle } from "../mode-toggle";
+import { Trophy, ChevronDown, Settings as SettingsIcon } from "lucide-react";
+// import { ModeToggle } from "../mode-toggle";
 import { UserMenu } from "../layout/user-menu";
 import { usePersonalBests, useGameConfig } from "../../store/game-store";
 import {
@@ -10,6 +10,24 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import { useTypingSound } from "@/hooks/use-sound";
+import { Volume2, VolumeX } from "lucide-react";
+
+const MuteButton = () => {
+    const { muted, toggleMute } = useTypingSound();
+
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            onClick={toggleMute}
+        >
+            {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            <span className="sr-only">{muted ? 'Unmute' : 'Mute'}</span>
+        </Button>
+    );
+};
 
 export const Header = () => {
     const { difficulty } = useGameConfig();
@@ -35,8 +53,11 @@ export const Header = () => {
                 </p>
             </Link>
 
+
+
             {/* Right side controls */}
-            <div className="flex items-center gap-2 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-2">
+                <MuteButton />
                 {/* Personal Best Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -77,7 +98,15 @@ export const Header = () => {
 
                 <div className="w-px h-8 bg-border hidden sm:block" />
 
-                <ModeToggle />
+                <Link to="/settings">
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+                        <SettingsIcon className="w-5 h-5" />
+                        <span className="sr-only">Settings</span>
+                    </Button>
+                </Link>
+
+
+
                 <UserMenu />
             </div>
         </header>

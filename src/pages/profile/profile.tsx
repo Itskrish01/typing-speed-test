@@ -5,7 +5,7 @@ import { HistoryTable } from "@/components/ui-blocks/history-table";
 import { getPaginatedHistory, ensureUserProfile, type UserProfile, type HistoryEntry } from "@/lib/firestore-helpers";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Header } from "@/components/ui-blocks/header";
-import { Share2, ExternalLink } from "lucide-react";
+import { ShareProfile } from "@/components/ui-blocks/share-profile";
 import { ActivityHeatmap } from "@/components/ui-blocks/activity-heatmap";
 import { StatsOverview } from "@/components/ui-blocks/stats-overview";
 import { UsernameEditDialog } from "@/components/ui-blocks/username-edit-dialog";
@@ -79,7 +79,6 @@ export const Profile = () => {
 
     return (
         <PageLayout>
-            <Header />
             <main className="flex-1 py-8 w-full space-y-8">
                 <ProfileBanner
                     displayName={displayName}
@@ -88,14 +87,7 @@ export const Profile = () => {
                     onEdit={() => setIsEditOpen(true)}
                 />
 
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Share2 className="w-3 h-3" />
-                    <span className="opacity-60">Share:</span>
-                    <span className="select-all hover:text-foreground transition-colors">{publicUrl}</span>
-                    <a href={publicUrl} target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">
-                        <ExternalLink className="w-3 h-3" />
-                    </a>
-                </div>
+                <ShareProfile url={publicUrl} />
 
                 {user && profile && (
                     <UsernameEditDialog

@@ -10,8 +10,10 @@ import {
     useGameActions,
     useGameConfig,
 } from "../../store/game-store";
+import { useTypingSound } from "../../hooks/use-sound";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Header } from "@/components/ui-blocks/header";
+import { ThemeFooter } from "@/components/ui-blocks/theme-footer";
 import { StatsBar } from "@/components/ui-blocks/stats-bar";
 import { ConfigBar } from "@/components/ui-blocks/config-bar";
 import { TypingArea } from "@/components/ui-blocks/typing-area";
@@ -24,6 +26,7 @@ export const Home = () => {
 
     const results = useGameResultData();
     const { initGame, resetGame, handleInput, tick, setFocused } = useGameActions();
+    const { play, playError } = useTypingSound();
 
     // Refs
     const inputRef = useRef<HTMLInputElement>(null);
@@ -123,6 +126,30 @@ export const Home = () => {
     }, [isFinished, user, results, difficulty, mode, category]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        const oldLength = userInput.length;
+        const newLength = val.length;
+
+        // Only play sound on character addition (not backspace)
+        if (newLength > oldLength) {
+            const charIndex = newLength - 1;
+            const typedChar = val[charIndex];
+            const expectedChar = text[charIndex];
+
+            // If we have a mismatch
+            if (typedChar !== expectedChar) {
+                playError();
+            } else {
+                play();
+            }
+        } else {
+            // For backspace or other, strictly we might want a sound or no sound.
+            // Original code had `play()` on every change.
+            // Let's keep `play()` for backspace as well to be consistent with "typing sound",
+            // or we could suppress it. Let's play regular sound for backspace for feedback.
+            play();
+        }
+
         handleInput(e.target.value);
     };
 
@@ -138,7 +165,6 @@ export const Home = () => {
     return (
         <PageLayout>
             <div className="flex flex-col flex-1">
-                <Header />
 
                 <main className="flex flex-col items-center gap-6 md:gap-8 mt-8 md:mt-12 flex-1 relative">
                     {/* Game Interface */}
