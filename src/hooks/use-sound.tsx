@@ -2,9 +2,9 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { useAuth } from '@/context/auth-context';
 import { updateUserSoundPreference } from '@/lib/firestore-helpers';
 
-export type SoundType = 'off' | 'click' | 'typewriter' | 'fart' | 'hitmarker' | 'rubber' | 'pop' | 'error';
+export type SoundType = 'off' | 'click' | 'typewriter' | 'hitmarker' | 'rubber' | 'pop' | 'error';
 
-const SOUND_TYPES: Exclude<SoundType, 'off'>[] = ['click', 'typewriter', 'fart', 'hitmarker', 'rubber', 'pop'];
+const SOUND_TYPES: Exclude<SoundType, 'off'>[] = ['click', 'typewriter', 'hitmarker', 'rubber', 'pop'];
 const DEFAULT_VOLUME = 0.5; // Lowered volume as requested
 
 interface SoundContextType {
