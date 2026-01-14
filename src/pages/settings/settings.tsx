@@ -5,10 +5,30 @@ import { useAuth } from "@/context/auth-context";
 import { updateUserTheme } from "@/lib/firestore-helpers";
 import { saveTheme } from "@/lib/storage-helpers";
 import { useTypingSound, type SoundType } from "@/hooks/use-sound";
-import { Check, Volume2, Palette } from "lucide-react";
+import {
+    Check,
+    Volume2,
+    Palette,
+    VolumeX,
+    Keyboard,
+    MousePointerClick,
+    Crosshair,
+    Eraser,
+    Zap
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { THEMES, type ThemeDefinition } from "@/lib/themes";
+
+const SOUND_ICONS: Record<SoundType, React.ElementType> = {
+    off: VolumeX,
+    click: MousePointerClick,
+    typewriter: Keyboard,
+    hitmarker: Crosshair,
+    rubber: Eraser,
+    pop: Zap,
+    error: VolumeX // Should not be selectable usually, but good fallback
+};
 
 export const Settings = () => {
     const { theme, setTheme } = useTheme();
@@ -85,28 +105,42 @@ export const Settings = () => {
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {sounds.map((sound) => (
-                            <button
-                                key={sound}
-                                onClick={() => {
-                                    setSound(sound);
-                                    previewSound(sound);
-                                }}
-                                className={cn(
-                                    "group relative flex items-center justify-between p-4 rounded-xl border border-border/40 hover:border-border transition-all hover:bg-secondary/40",
-                                    currentSound === sound && "ring-2 ring-primary border-primary bg-secondary/20"
-                                )}
-                            >
-                                <span className="capitalize font-medium">
-                                    {sound === 'rubber' ? 'Rubber Key' : sound}
-                                </span>
-                                {currentSound === sound && (
-                                    <div className="p-0.5 rounded-full bg-primary text-primary-foreground">
-                                        <Check className="w-3 h-3" />
+                        {sounds.map((sound) => {
+                            const isSelected = currentSound === sound;
+                            const Icon = SOUND_ICONS[sound] || Volume2;
+
+                            return (
+                                <button
+                                    key={sound}
+                                    onClick={() => {
+                                        setSound(sound);
+                                        previewSound(sound);
+                                    }}
+                                    className={cn(
+                                        "relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 outline-none",
+                                        "hover:scale-[1.02] active:scale-95",
+                                        isSelected
+                                            ? "border-primary bg-primary/10 text-primary shadow-sm"
+                                            : "border-transparent bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                    )}
+                                >
+                                    <div className={cn(
+                                        "mb-3 p-3 rounded-full transition-colors",
+                                        isSelected ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground"
+                                    )}>
+                                        <Icon className="w-5 h-5" />
                                     </div>
-                                )}
-                            </button>
-                        ))}
+                                    <span className="capitalize font-semibold text-sm tracking-wide">
+                                        {sound === 'rubber' ? 'Rubber Key' : sound}
+                                    </span>
+                                    {isSelected && (
+                                        <div className="absolute top-3 right-3 text-primary">
+                                            <Check className="w-4 h-4" />
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </main>

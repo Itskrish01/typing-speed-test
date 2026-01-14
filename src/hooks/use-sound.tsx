@@ -5,7 +5,7 @@ import { updateUserSoundPreference } from '@/lib/firestore-helpers';
 export type SoundType = 'off' | 'click' | 'typewriter' | 'hitmarker' | 'rubber' | 'pop' | 'error';
 
 const SOUND_TYPES: Exclude<SoundType, 'off'>[] = ['click', 'typewriter', 'hitmarker', 'rubber', 'pop'];
-const DEFAULT_VOLUME = 0.5; // Lowered volume as requested
+const DEFAULT_VOLUME = 0.8; // Lowered volume as requested
 
 interface SoundContextType {
     currentSound: SoundType;
@@ -101,11 +101,25 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        loadSounds(currentSound);
-        if (currentSound !== 'off') {
+        // Preload ALL sounds on mount to ensure instant responsiveness
+        const preloadAll = async () => {
+            // Wait for audio context to be available
+            if (!audioContextRef.current) return;
+
+            // Load 'error' sound
             loadSounds('error');
-        }
-    }, [currentSound, loadSounds]);
+
+            // Load all other sound types
+            for (const type of SOUND_TYPES) {
+                loadSounds(type);
+            }
+        };
+
+        // We need to wait a tick for the audio context ref to optionally be set if it wasn't synchronous,
+        // but our init effect is synchronous if AudioContext exists.
+        // However, let's just call it.
+        preloadAll();
+    }, [loadSounds]);
 
     const playSound = useCallback((type: SoundType) => {
         if (muted || type === 'off' || !audioContextRef.current || !gainNodeRef.current) return;

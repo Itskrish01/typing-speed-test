@@ -72,7 +72,7 @@ export const Header = () => {
                 {/* Personal Best Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-secondary/20" aria-label="View personal bests">
+                        <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-transparent cursor-pointer" aria-label="View personal bests">
                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground transition-colors shrink-0">
                                 <Trophy className="w-4 h-4" />
                             </span>
