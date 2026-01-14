@@ -15,24 +15,25 @@ function App() {
     <AuthProvider>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <SoundProvider>
-          <UserDataSync />
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/u/:userId" element={<PublicProfileCard />} />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-            </Routes>
-          </Router>
+          <UserDataSync>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/u/:userId" element={<PublicProfileCard />} />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+              </Routes>
+            </Router>
+          </UserDataSync>
         </SoundProvider>
       </ThemeProvider>
     </AuthProvider>
