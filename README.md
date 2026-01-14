@@ -50,7 +50,7 @@ I built a robust **Theming System** using `next-themes` and Tailwind CSS variabl
 *   **Words Mode**: Practice with fixed sets of words (10, 25, 50, 100).
 *   **Timed Mode**: The classic 60-second sprint.
 *   **Custom Mode**: Paste your own text (great for practicing code snippets or specific articles).
-*   **Code Mode**: (Coming Soon) Practice typing actual syntax for JS, Python, and C++.
+*   **Code Mode**: Practice typing actual keywords from your preferred programming language.
 
 ### 🧠 Adaptive Difficulty
 *   **Easy**: Common, short words.
