@@ -362,8 +362,7 @@ export const Result = () => {
                                 Sign in to save your results, view your history, and compete on the global leaderboard.
                             </p>
                             <div className="flex gap-4 mt-2">
-                                <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
-                                <Button onClick={() => navigate('/signup')}>Register</Button>
+                                <Button variant="outline" onClick={() => navigate('/login')}>Get Started</Button>
                             </div>
                         </div>
                     </section>

@@ -9,7 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 
 export const UserMenu = () => {
     const { user, loading } = useAuth();
@@ -25,16 +25,9 @@ export const UserMenu = () => {
     if (!user) {
         return (
             <div className="flex items-center gap-2">
-                <Button variant="ghost" asChild>
-                    <Link to="/login">
-                        <LogIn className="w-4 h-4 mr-2" />
-                        Login
-                    </Link>
-                </Button>
                 <Button asChild>
-                    <Link to="/signup">
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Register
+                    <Link to="/login">
+                        Get started
                     </Link>
                 </Button>
             </div>
