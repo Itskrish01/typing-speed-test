@@ -16,6 +16,18 @@ import {
 import { db } from "../config/firebase";
 
 // Types
+export interface CharacterStats {
+    correct: number;
+    incorrect: number;
+    extra: number;
+    missed: number;
+}
+
+export interface Mistake {
+    expected: string;
+    typed: string;
+}
+
 export interface TestResult {
     userId: string;
     wpm: number;
@@ -24,6 +36,9 @@ export interface TestResult {
     difficulty: string;
     mode: string;
     category: string;
+    characters?: CharacterStats;
+    mistakes?: Mistake[];
+    time?: number;
     timestamp: any; // ServerTimestamp
 }
 

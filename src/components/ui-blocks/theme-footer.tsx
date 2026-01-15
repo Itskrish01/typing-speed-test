@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/context/auth-context";
 import { updateUserTheme } from "@/lib/firestore-helpers";
@@ -75,12 +76,12 @@ export const ThemeFooter = () => {
             <div className="w-full py-6 flex justify-between items-end">
                 {/* Left Side: Leaderboard & Inspiration Link */}
                 <div className="pointer-events-auto flex items-center gap-3 text-xs text-muted-foreground/50">
-                    <a
-                        href="/leaderboard"
+                    <Link
+                        to="/leaderboard"
                         className="hover:text-foreground transition-colors"
                     >
                         leaderboard
-                    </a>
+                    </Link>
                     <span className="opacity-50">•</span>
                     <span>inspired by</span>
                     <a

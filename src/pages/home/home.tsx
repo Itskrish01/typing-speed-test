@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth-context";
 import { saveTestResult } from "../../lib/firestore-helpers";
 
@@ -15,13 +16,13 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { StatsBar } from "@/components/ui-blocks/stats-bar";
 import { ConfigBar } from "@/components/ui-blocks/config-bar";
 import { TypingArea } from "@/components/ui-blocks/typing-area";
-import { ResultsView } from "@/components/ui-blocks/results-view";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Home = () => {
     const { isReady, isActive, isFinished, isFocused } = useGameStatus();
     const { text, userInput } = useGameText();
+    const navigate = useNavigate();
 
     const results = useGameResultData();
     const { initGame, resetGame, handleInput, tick, setFocused } = useGameActions();
@@ -100,7 +101,7 @@ export const Home = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isFinished, isReady, isActive, isFocused, resetGame]);
 
-    // Save result when game finishes
+    // Save result when game finishes and navigate to result page
     const hasSavedRef = useRef(false);
     const { user } = useAuth();
     const { difficulty, mode, category } = useGameConfig();
@@ -109,19 +110,55 @@ export const Home = () => {
         if (!isFinished) {
             hasSavedRef.current = false;
         } else if (isFinished && user && !hasSavedRef.current) {
-            // Only save if we have valid results (avoid saving 0 wpm on quick skips if any)
-            // But results.wpm should be valid here.
             hasSavedRef.current = true;
+
+            const characters = {
+                correct: results.userInput.split('').filter((c, i) => c === results.text[i]).length,
+                incorrect: results.errorCount,
+                extra: Math.max(0, results.userInput.length - results.text.length),
+                missed: Math.max(0, results.text.length - results.userInput.length)
+            };
+
+            // Calculate mistakes (max 10 to keep data small)
+            const mistakes: { expected: string; typed: string }[] = [];
+            const minLen = Math.min(results.text.length, results.userInput.length);
+            for (let i = 0; i < minLen && mistakes.length < 10; i++) {
+                if (results.text[i] !== results.userInput[i]) {
+                    mistakes.push({ expected: results.text[i], typed: results.userInput[i] });
+                }
+            }
+
+            // Save to Firestore
             saveTestResult(user.uid, {
                 wpm: results.wpm,
                 accuracy: results.accuracy,
                 errors: results.errorCount,
                 difficulty,
                 mode,
-                category
+                category,
+                characters,
+                mistakes,
+                time: results.timerCount
+            });
+
+            // Navigate to result page with data
+            navigate('/result', {
+                state: {
+                    justFinished: true,
+                    result: {
+                        wpm: results.wpm,
+                        accuracy: results.accuracy,
+                        time: results.timerCount,
+                        difficulty,
+                        category,
+                        characters,
+                        mistakes,
+                        isNewHighScore: results.wasNewHighScore
+                    }
+                }
             });
         }
-    }, [isFinished, user, results, difficulty, mode, category]);
+    }, [isFinished, user, results, difficulty, mode, category, navigate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
@@ -220,30 +257,6 @@ export const Home = () => {
                                 </Button>
                             </div>
                         </div>
-                    )}
-
-                    {/* Results Interface */}
-                    {isFinished && (
-                        <ResultsView
-                            wpm={results.wpm}
-                            accuracy={results.accuracy}
-                            characters={{
-                                correct: results.userInput.split('').filter((c, i) => c === results.text[i]).length,
-                                incorrect: results.errorCount,
-                                extra: Math.max(0, results.userInput.length - results.text.length),
-                                missed: Math.max(0, results.text.length - results.userInput.length)
-                            }}
-                            time={results.timerCount}
-                            onRestart={handleRestart}
-                            testType={results.mode === 'timed' ? `time ${results.initialTime}s` : `words`}
-                            isNewHighScore={results.wasNewHighScore}
-                            isFirstTest={results.wasFirstTest}
-                            previousBest={results.previousBestWpm}
-                            category={category}
-                            difficulty={difficulty}
-                            text={results.text}
-                            userInput={results.userInput}
-                        />
                     )}
                 </main>
             </div>

@@ -14,7 +14,7 @@ export const countCorrectChars = (input: string, target: string): number => {
 export const countCorrectWords = (input: string, target: string): number => {
     const inputWords = input.trim().split(/\s+/);
     const targetWords = target.trim().split(/\s+/);
-    
+
     let correctWords = 0;
     for (let i = 0; i < inputWords.length && i < targetWords.length; i++) {
         if (inputWords[i] === targetWords[i]) {
@@ -82,6 +82,7 @@ export const mapFirestoreBestsToStore = (
         easy: firestoreBests.easy ? { wpm: firestoreBests.easy, accuracy: 0, date: now } : null,
         medium: firestoreBests.medium ? { wpm: firestoreBests.medium, accuracy: 0, date: now } : null,
         hard: firestoreBests.hard ? { wpm: firestoreBests.hard, accuracy: 0, date: now } : null,
+        ranked: firestoreBests.ranked ? { wpm: firestoreBests.ranked, accuracy: 0, date: now } : null,
         custom: null
     };
 };

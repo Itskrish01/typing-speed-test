@@ -9,6 +9,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { Home } from "./pages/home/home";
 import { Settings } from "./pages/settings/settings";
 import { Leaderboard } from "./pages/leaderboard/leaderboard";
+import { Result } from "./pages/result/result";
 import { SoundProvider } from "./hooks/use-sound";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/result" element={<Result />} />
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
@@ -43,4 +45,3 @@ function App() {
 }
 
 export default App;
-
