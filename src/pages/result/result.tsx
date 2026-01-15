@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
 import { useAuth } from '@/context/auth-context';
-import { getUserHistory, type HistoryEntry, type Mistake } from '@/lib/firestore-helpers';
+import { getUserHistory, getUserRank, type HistoryEntry, type Mistake } from '@/lib/firestore-helpers';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Clock, Keyboard, Zap, Crown, ArrowLeft, Calendar, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,8 +24,11 @@ interface LocationState {
         };
         mistakes?: Mistake[];
         isNewHighScore: boolean;
+        isVerified?: boolean;
+        validationError?: string;
     };
 }
+
 
 export const Result = () => {
     const { user } = useAuth();
@@ -74,7 +77,9 @@ export const Result = () => {
                 category: state.result.category,
                 characters: state.result.characters,
                 mistakes: state.result.mistakes || [],
-                isNewHighScore: state.result.isNewHighScore
+                isNewHighScore: state.result.isNewHighScore,
+                isVerified: state.result.isVerified,
+                validationError: state.result.validationError
             };
         }
 
@@ -89,14 +94,28 @@ export const Result = () => {
                 category: test.category,
                 characters: test.characters || { correct: 0, incorrect: 0, extra: 0, missed: 0 },
                 mistakes: test.mistakes || [],
-                isNewHighScore: false
+                isNewHighScore: false,
+                isVerified: true
             };
         }
 
         return null;
     };
 
-    const displayResult = getDisplayResult();
+    const displayResult = useMemo(() => getDisplayResult(), [state, selectedIndex, recentTests]);
+    const [globalRank, setGlobalRank] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchRank = async () => {
+            if (user && displayResult?.category === 'ranked') {
+                const rank = await getUserRank(user.uid);
+                setGlobalRank(rank);
+            } else {
+                setGlobalRank(null);
+            }
+        };
+        fetchRank();
+    }, [user, displayResult?.category]);
     const isNewHighScore = displayResult?.isNewHighScore || false;
 
     if (!user) {
@@ -114,7 +133,7 @@ export const Result = () => {
         return (
             <PageLayout>
                 <div className="flex-1 flex items-center justify-center">
-                    <div className="animate-pulse text-muted-foreground">Loading...</div>
+                    <div className=" text-muted-foreground">Loading...</div>
                 </div>
             </PageLayout>
         );
@@ -147,8 +166,15 @@ export const Result = () => {
 
                 {/* Main Result Card */}
                 <section className="flex flex-col items-center gap-6">
+                    {displayResult.validationError && (
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-red-500/30 bg-red-500/10 text-red-500 text-sm font-medium  mb-4">
+                            <AlertTriangle className="w-4 h-4" />
+                            {displayResult.validationError}
+                        </div>
+                    )}
+
                     {isNewHighScore && (
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-sm font-medium animate-pulse">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-sm font-medium ">
                             <Crown className="w-4 h-4" />
                             New Personal Best!
                         </div>
@@ -178,21 +204,36 @@ export const Result = () => {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl">
-                        <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
-                            <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
-                                <Trophy className="w-3.5 h-3.5" />
-                                Difficulty
+                        {displayResult.category === 'ranked' ? (
+                            <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary col-span-2 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-yellow-500/5" />
+                                <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider z-10">
+                                    <Trophy className="w-3.5 h-3.5 text-yellow-500" />
+                                    Global Rank
+                                </div>
+                                <span className="text-xl font-bold text-yellow-500 z-10">
+                                    {globalRank ? `#${globalRank}` : <span className="text-sm opacity-50">Calculating...</span>}
+                                </span>
                             </div>
-                            <span className="text-lg font-bold capitalize">{displayResult.difficulty}</span>
-                        </div>
+                        ) : (
+                            <>
+                                <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
+                                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
+                                        <Trophy className="w-3.5 h-3.5" />
+                                        Difficulty
+                                    </div>
+                                    <span className="text-lg font-bold capitalize">{displayResult.difficulty}</span>
+                                </div>
 
-                        <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
-                            <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
-                                <Zap className="w-3.5 h-3.5" />
-                                Category
-                            </div>
-                            <span className="text-lg font-bold capitalize">{displayResult.category}</span>
-                        </div>
+                                <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
+                                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
+                                        <Zap className="w-3.5 h-3.5" />
+                                        Category
+                                    </div>
+                                    <span className="text-lg font-bold capitalize">{displayResult.category}</span>
+                                </div>
+                            </>
+                        )}
 
                         <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
                             <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">

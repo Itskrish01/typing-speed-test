@@ -11,11 +11,13 @@ import { Settings } from "./pages/settings/settings";
 import { Leaderboard } from "./pages/leaderboard/leaderboard";
 import { Result } from "./pages/result/result";
 import { SoundProvider } from "./hooks/use-sound";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <Toaster />
         <SoundProvider>
           <UserDataSync>
             <Router>

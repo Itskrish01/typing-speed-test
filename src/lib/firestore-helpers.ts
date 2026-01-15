@@ -11,7 +11,8 @@ import {
     orderBy,
     getDocs,
     limit,
-    startAfter
+    startAfter,
+    getCountFromServer
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -208,6 +209,8 @@ export const updateUsername = async (userId: string, newUsername: string) => {
     await updateDoc(userRef, { username: newUsername });
 };
 
+
+
 // ------ Test Results & History ------
 
 export const saveTestResult = async (userId: string, result: Omit<TestResult, 'userId' | 'timestamp'>) => {
@@ -247,6 +250,7 @@ export const saveTestResult = async (userId: string, result: Omit<TestResult, 'u
 
     } catch (error) {
         console.error("Error saving test result:", error);
+        throw error;
     }
 };
 
@@ -369,13 +373,13 @@ export const getUserRank = async (userId: string): Promise<number | null> => {
 
     if (userWpm === 0) return null;
 
-    // Count users with higher WPM
+    // Count users with higher WPM using efficient server-side aggregation
     const usersRef = collection(db, "users");
     const q = query(
         usersRef,
         where("bestRankedWpm", ">", userWpm)
     );
 
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.size + 1; // Rank is position after all users with higher WPM
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count + 1;
 };

@@ -4,6 +4,7 @@ import { useAuth } from "../../context/auth-context";
 import { saveTestResult } from "../../lib/firestore-helpers";
 
 import { RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 import {
     useGameStatus,
     useGameText,
@@ -128,35 +129,77 @@ export const Home = () => {
                 }
             }
 
-            // Save to Firestore
-            saveTestResult(user.uid, {
-                wpm: results.wpm,
-                accuracy: results.accuracy,
-                errors: results.errorCount,
-                difficulty,
-                mode,
-                category,
-                characters,
-                mistakes,
-                time: results.timerCount
-            });
-
-            // Navigate to result page with data
-            navigate('/result', {
-                state: {
-                    justFinished: true,
-                    result: {
+            // Save to Firestore with verification
+            const handleSaveAndNavigate = async () => {
+                try {
+                    await saveTestResult(user.uid, {
                         wpm: results.wpm,
                         accuracy: results.accuracy,
-                        time: results.timerCount,
+                        errors: results.errorCount,
                         difficulty,
+                        mode,
                         category,
                         characters,
                         mistakes,
-                        isNewHighScore: results.wasNewHighScore
+                        time: results.timerCount
+                    });
+
+                    // Success - Navigate with verified status
+                    navigate('/result', {
+                        state: {
+                            justFinished: true,
+                            result: {
+                                wpm: results.wpm,
+                                accuracy: results.accuracy,
+                                time: results.timerCount,
+                                difficulty,
+                                category,
+                                characters,
+                                mistakes,
+                                isNewHighScore: results.wasNewHighScore,
+                                isVerified: true
+                            }
+                        }
+                    });
+                } catch (error: any) {
+                    console.error("Failed to save result:", error);
+
+                    const isCheat = error?.code === 'permission-denied' ||
+                        (error?.message && error.message.includes('Missing or insufficient permissions'));
+
+                    const validationError = isCheat
+                        ? 'Anti-Cheat: Result Rejected (Suspected Automation)'
+                        : 'Verification Failed: Could not save result';
+
+                    // Failure - Navigate with error status
+                    navigate('/result', {
+                        state: {
+                            justFinished: true,
+                            result: {
+                                wpm: results.wpm,
+                                accuracy: results.accuracy,
+                                time: results.timerCount,
+                                difficulty,
+                                category,
+                                characters,
+                                mistakes,
+                                isNewHighScore: false, // Invalidate high score
+                                isVerified: false,
+                                validationError
+                            }
+                        }
+                    });
+
+                    // Show toast too
+                    if (isCheat) {
+                        toast.error("Result Rejected: Anti-Cheat Triggered");
+                    } else {
+                        toast.error("Failed to save result");
                     }
                 }
-            });
+            };
+
+            handleSaveAndNavigate();
         }
     }, [isFinished, user, results, difficulty, mode, category, navigate]);
 
