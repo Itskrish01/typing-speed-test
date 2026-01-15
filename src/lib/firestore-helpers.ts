@@ -240,7 +240,7 @@ export const saveTestResult = async (userId: string, result: Omit<TestResult, 'u
             } else {
                 // Handle standard difficulty modes
                 const currentBest = userData.bestWpm?.[result.difficulty] || 0;
-                if (result.wpm > currentBest && result.mode === 'passage' && ['easy', 'medium', 'hard'].includes(result.difficulty)) {
+                if (result.wpm > currentBest && ['easy', 'medium', 'hard'].includes(result.difficulty)) {
                     await updateDoc(userRef, {
                         [`bestWpm.${result.difficulty}`]: result.wpm
                     });

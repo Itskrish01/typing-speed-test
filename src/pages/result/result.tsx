@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Clock, Keyboard, Zap, Crown, ArrowLeft, Calendar, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { useGameActions } from '@/store/game-store';
 
 
 interface LocationState {
@@ -36,12 +37,17 @@ interface LocationState {
 export const Result = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { resetGame } = useGameActions();
     const location = useLocation();
     const state = location.state as LocationState | null;
 
     const [recentTests, setRecentTests] = useState<HistoryEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState(0);
+
+    useEffect(() => {
+        resetGame();
+    }, [resetGame]);
 
 
     useEffect(() => {
@@ -148,7 +154,7 @@ export const Result = () => {
             <PageLayout>
                 <div className="flex-1 flex flex-col items-center justify-center gap-4">
                     <p className="text-muted-foreground">No test results yet</p>
-                    <Button onClick={() => navigate('/')}>Take a Test</Button>
+                    <Button onClick={() => { resetGame(); navigate('/'); }}>Take a Test</Button>
                 </div>
             </PageLayout>
         );
@@ -161,7 +167,7 @@ export const Result = () => {
                 <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => navigate('/')}
+                    onClick={() => { resetGame(); navigate('/'); }}
                     className="self-start gap-2 text-muted-foreground"
                 >
                     <ArrowLeft className="w-4 h-4" />
@@ -288,7 +294,7 @@ export const Result = () => {
                         </div>
                     )}
 
-                    <Button onClick={() => navigate('/')} size="lg" className="mt-4 gap-2 px-8">
+                    <Button onClick={() => { resetGame(); navigate('/'); }} size="lg" className="mt-4 gap-2 px-8">
                         <RotateCcw className="w-4 h-4" />
                         New Test
                     </Button>
