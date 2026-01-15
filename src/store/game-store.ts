@@ -18,7 +18,7 @@ import { fireConfetti, fireBaseline } from '../lib/confetti';
 
 // Types
 export type Mode = 'timed' | 'passage';
-export type Category = 'words' | 'quotes' | 'lyrics' | 'code';
+export type Category = 'words' | 'quotes' | 'ranked' | 'code';
 export type Language = 'javascript' | 'python' | 'java' | 'c++' | 'c#' | 'sql' | 'html' | 'css';
 export type GameStatus = 'ready' | 'active' | 'finished';
 
@@ -291,8 +291,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
         let isFirst = false;
         const currentBest = personalBests[difficulty];
 
-        // Only update Best if Passage Mode
-        if (difficulty !== 'custom' && mode === 'passage') {
+        // Update Best for any non-custom difficulty
+        if (difficulty !== 'custom') {
             isFirst = checkFirstTest(currentBest);
             isNewHigh = checkNewHighScore(finalWpm, currentBest);
 
@@ -324,8 +324,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
             wpm: finalWpm,
             accuracy: finalAccuracy,
             timerCount: Math.round(timeElapsed),
-            wasFirstTest: isFirst && mode === 'passage',
-            wasNewHighScore: !isFirst && isNewHigh && mode === 'passage',
+            wasFirstTest: isFirst,
+            wasNewHighScore: !isFirst && isNewHigh,
             previousBestWpm: currentBest?.wpm || null,
         });
     },

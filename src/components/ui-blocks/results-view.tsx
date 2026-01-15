@@ -1,5 +1,8 @@
 import { Button } from '../ui/button';
-import { RotateCcw, Trophy, Sparkles, Target } from 'lucide-react';
+import { RotateCcw, Trophy, Clock, Keyboard, Zap, AlertTriangle, Crown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useMemo, useEffect } from 'react';
+import { fireConfetti } from '@/lib/confetti';
 
 interface ResultsViewProps {
     wpm: number;
@@ -16,7 +19,21 @@ interface ResultsViewProps {
     isNewHighScore: boolean;
     isFirstTest: boolean;
     previousBest: number | null;
+    category: string;
+    difficulty: string;
+    text: string;
+    userInput: string;
 }
+
+const getBestLabel = (category: string, difficulty: string): string => {
+    if (category === 'ranked') return 'Ranked Best';
+    if (category === 'code') return 'Code Best';
+    if (category === 'quotes') return 'Quotes Best';
+    if (['easy', 'medium', 'hard'].includes(difficulty)) {
+        return `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Best`;
+    }
+    return 'Best';
+};
 
 export const ResultsView = ({
     wpm,
@@ -27,109 +44,135 @@ export const ResultsView = ({
     testType,
     isNewHighScore,
     isFirstTest,
-    previousBest
+    previousBest,
+    category,
+    difficulty,
+    text,
+    userInput
 }: ResultsViewProps) => {
-    return (
-        <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
+    const bestLabel = getBestLabel(category, difficulty);
 
-            {/* Achievement Text - Clean, no background */}
-            {(isNewHighScore || isFirstTest) && (
-                <div className="mb-8 flex items-center gap-3 animate-in zoom-in duration-500">
-                    {isFirstTest ? (
-                        <>
-                            <Target className="w-6 h-6 text-chart-2" />
-                            <div className="flex flex-col">
-                                <span className="text-xl font-bold text-chart-2">Baseline Established!</span>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <Sparkles className="w-6 h-6 text-chart-3" />
-                            <div className="flex flex-col items-start sm:items-center">
-                                <span className="text-xl font-bold text-chart-3">High Score Smashed!</span>
-                                <span className="text-sm text-muted-foreground">
-                                    Previous: {previousBest} WPM (+{wpm - (previousBest || 0)})
-                                </span>
-                            </div>
-                        </>
-                    )}
+    useEffect(() => {
+        if (isNewHighScore) {
+            fireConfetti();
+        }
+    }, [isNewHighScore]);
+
+    const mistakes = useMemo(() => {
+        const errors: { expected: string; typed: string }[] = [];
+        const minLen = Math.min(text.length, userInput.length);
+        for (let i = 0; i < minLen; i++) {
+            if (text[i] !== userInput[i]) {
+                errors.push({ expected: text[i], typed: userInput[i] });
+            }
+        }
+        return errors.slice(0, 8);
+    }, [text, userInput]);
+
+    return (
+        <section
+            className="w-full flex-1 flex flex-col items-center justify-center gap-6 py-8 animate-in fade-in duration-300"
+            role="region"
+            aria-label="Test Results"
+        >
+            {/* New High Score Badge */}
+            {isNewHighScore && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-sm font-medium">
+                    <Crown className="w-4 h-4" />
+                    New Personal Best!
                 </div>
             )}
 
-            {/* Main Results */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 mb-10">
-                {/* WPM */}
+            {/* Main Stats */}
+            <div className="flex items-center gap-8 sm:gap-12">
                 <div className="flex flex-col items-center">
-                    <span className="text-lg md:text-xl text-muted-foreground font-medium mb-2">wpm</span>
-                    <span className="text-6xl sm:text-7xl md:text-8xl font-black text-primary leading-none tracking-tight tabular-nums">
+                    <span className="text-6xl sm:text-7xl font-black text-primary tabular-nums leading-none">
                         {wpm}
                     </span>
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground mt-2">wpm</span>
                 </div>
 
-                {/* Divider */}
-                <div className="hidden sm:block h-24 w-px bg-border" />
-                <div className="sm:hidden w-24 h-px bg-border" />
+                <div className="h-14 w-px bg-border/50" />
 
-                {/* Accuracy */}
                 <div className="flex flex-col items-center">
-                    <span className="text-lg md:text-xl text-muted-foreground font-medium mb-2">accuracy</span>
-                    <span className={`text-6xl sm:text-7xl md:text-8xl font-black leading-none tracking-tight tabular-nums ${accuracy >= 95 ? 'text-chart-2' : accuracy >= 80 ? 'text-chart-3' : 'text-destructive'
-                        }`}>
+                    <span className={cn(
+                        "text-6xl sm:text-7xl font-black tabular-nums leading-none",
+                        accuracy >= 98 ? 'text-green-500' : accuracy >= 90 ? 'text-yellow-500' : 'text-red-500'
+                    )}>
                         {accuracy}%
                     </span>
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground mt-2">accuracy</span>
                 </div>
             </div>
 
-            {/* Detailed Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 w-full max-w-2xl border-t border-border/40 pt-8 mb-10">
-                <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider">Test Type</span>
-                    <span className="text-lg sm:text-xl font-semibold text-foreground">{testType}</span>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl">
+                <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
+                        <Trophy className="w-3.5 h-3.5" />
+                        {bestLabel}
+                    </div>
+                    <span className="text-xl font-bold tabular-nums">{isNewHighScore ? wpm : (previousBest || '-')}</span>
                 </div>
 
-                <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider">Time</span>
-                    <span className="text-lg sm:text-xl font-semibold text-foreground tabular-nums">{time}s</span>
+                <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
+                        <Zap className="w-3.5 h-3.5" />
+                        Mode
+                    </div>
+                    <span className="text-lg font-bold capitalize">{testType.includes('time') ? 'Timed' : 'Words'}</span>
                 </div>
 
-                <div className="flex flex-col items-center gap-1 col-span-2 sm:col-span-1">
-                    <span className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider">Characters</span>
-                    <div className="flex items-center gap-1.5 text-lg sm:text-xl font-semibold tabular-nums">
-                        <span className="text-chart-2">{characters.correct}</span>
-                        <span className="text-muted-foreground/50">/</span>
-                        <span className="text-destructive">{characters.incorrect}</span>
-                        <span className="text-muted-foreground/50">/</span>
-                        <span className="text-chart-5">{characters.extra}</span>
-                        <span className="text-muted-foreground/50">/</span>
-                        <span className="text-muted-foreground">{characters.missed}</span>
+                <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
+                        <Keyboard className="w-3.5 h-3.5" />
+                        Characters
+                    </div>
+                    <div className="flex items-center gap-1 text-lg font-bold tabular-nums">
+                        <span className="text-green-500">{characters.correct}</span>
+                        <span className="text-muted-foreground/40">/</span>
+                        <span className="text-red-500">{characters.incorrect}</span>
+                        <span className="text-muted-foreground/40">/</span>
+                        <span className="text-yellow-500">{characters.extra}</span>
                     </div>
                 </div>
 
-                {!isFirstTest && (
-                    <div className="flex flex-col items-center gap-1">
-                        <span className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider">Best</span>
-                        <div className="flex items-center gap-1.5">
-                            <Trophy className="w-4 h-4 text-chart-3" />
-                            <span className="text-lg sm:text-xl font-semibold text-chart-3 tabular-nums">
-                                {isNewHighScore ? wpm : previousBest}
-                            </span>
-                        </div>
+                <div className="flex flex-col items-center gap-1 p-4 rounded-xl bg-secondary">
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs uppercase tracking-wider">
+                        <Clock className="w-3.5 h-3.5" />
+                        Time
                     </div>
-                )}
+                    <span className="text-xl font-bold tabular-nums">{time}s</span>
+                </div>
             </div>
 
-            {/* Restart Button */}
-            <div className="flex flex-col items-center gap-4">
-                <Button
-                    onClick={onRestart}
-                    size="lg"
-                    className="gap-2 px-8 h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                >
-                    <RotateCcw className="w-4 h-4" />
-                    Try Again
-                </Button>
+            {/* Mistakes */}
+            {mistakes.length > 0 && (
+                <div className="w-full max-w-xl">
+                    <div className="flex items-center gap-2 text-destructive text-xs uppercase tracking-wider font-medium mb-3">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        Mistakes
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {mistakes.map((m, i) => (
+                            <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border/50 bg-card/50 text-sm">
+                                <span className="text-muted-foreground line-through">{m.expected === ' ' ? '␣' : m.expected}</span>
+                                <span className="text-destructive font-medium">{m.typed === ' ' ? '␣' : m.typed}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
-            </div>
-        </div>
+            {/* Restart */}
+            <Button onClick={onRestart} size="lg" className="mt-4 gap-2 px-8">
+                <RotateCcw className="w-4 h-4" />
+                Next Test
+            </Button>
+
+            <p className="text-xs text-muted-foreground/60">
+                Press <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">Tab</kbd> to restart
+            </p>
+        </section>
     );
 };

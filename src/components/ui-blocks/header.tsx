@@ -31,11 +31,13 @@ const MuteButton = () => {
 };
 
 export const Header = () => {
-    const { difficulty, setDifficulty } = useGameConfig();
+    const { difficulty, setDifficulty, category, setCategory } = useGameConfig();
     const personalBests = usePersonalBests();
     const { user } = useAuth();
 
-    const currentBest = difficulty !== 'custom' ? personalBests[difficulty]?.wpm || 0 : 0;
+    // If category is ranked, always show ranked best regardless of difficulty param
+    const effectiveDifficulty = category === 'ranked' ? 'ranked' : difficulty;
+    const currentBest = effectiveDifficulty !== 'custom' ? personalBests[effectiveDifficulty]?.wpm || 0 : 0;
 
     return (
         <header className="w-full flex items-center justify-between pb-4 sm:pb-8 pt-4">
@@ -103,6 +105,10 @@ export const Header = () => {
                         <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('hard')}>
                             <span className="font-medium text-destructive">Hard</span>
                             <span className="font-bold">{personalBests.hard?.wpm || 0} wpm</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('ranked')}>
+                            <span className="font-medium text-primary">Ranked</span>
+                            <span className="font-bold">{personalBests.ranked?.wpm || 0} wpm</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

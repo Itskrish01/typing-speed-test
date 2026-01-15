@@ -17,6 +17,7 @@ import { ConfigBar } from "@/components/ui-blocks/config-bar";
 import { TypingArea } from "@/components/ui-blocks/typing-area";
 import { ResultsView } from "@/components/ui-blocks/results-view";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const Home = () => {
     const { isReady, isActive, isFinished, isFocused } = useGameStatus();
@@ -163,7 +164,10 @@ export const Home = () => {
         <PageLayout>
             <div className="flex flex-col flex-1">
 
-                <main className="flex flex-col items-center gap-6 md:gap-8 mt-8 md:mt-12 flex-1 relative">
+                <main className={cn(
+                    "flex flex-col flex-1 relative",
+                    isFinished ? "items-center justify-center" : "items-center gap-6 md:gap-8 mt-8 md:mt-12"
+                )}>
                     {/* Game Interface */}
                     {!isFinished && (
                         <div className="w-full flex flex-col items-center gap-6 md:gap-8 animate-in fade-in duration-300">
@@ -235,6 +239,10 @@ export const Home = () => {
                             isNewHighScore={results.wasNewHighScore}
                             isFirstTest={results.wasFirstTest}
                             previousBest={results.previousBestWpm}
+                            category={category}
+                            difficulty={difficulty}
+                            text={results.text}
+                            userInput={results.userInput}
                         />
                     )}
                 </main>

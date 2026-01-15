@@ -43,6 +43,7 @@ export interface UserProfile {
         medium: number;
         hard: number;
     };
+    bestRankedWpm?: number;
     soundPreference?: string;
 }
 
@@ -66,6 +67,7 @@ export const createUserProfile = async (user: any, username: string) => {
                 medium: 0,
                 hard: 0
             },
+            bestRankedWpm: 0,
             soundPreference: "off"
         });
     }
@@ -98,6 +100,7 @@ export const ensureUserProfile = async (user: any) => {
             createdAt: serverTimestamp(),
             themePreference: "dark",
             bestWpm: { easy: 0, medium: 0, hard: 0 },
+            bestRankedWpm: 0,
             soundPreference: "off"
         };
         await setDoc(userRef, newProfile);
@@ -168,12 +171,23 @@ export const saveTestResult = async (userId: string, result: Omit<TestResult, 'u
 
         if (userSnap.exists()) {
             const userData = userSnap.data();
-            const currentBest = userData.bestWpm?.[result.difficulty] || 0;
 
-            if (result.wpm > currentBest && result.mode === 'passage' && ['easy', 'medium', 'hard'].includes(result.difficulty)) {
-                await updateDoc(userRef, {
-                    [`bestWpm.${result.difficulty}`]: result.wpm
-                });
+            // Handle ranked mode separately
+            if (result.category === 'ranked') {
+                const currentRankedBest = userData.bestRankedWpm || 0;
+                if (result.wpm > currentRankedBest) {
+                    await updateDoc(userRef, {
+                        bestRankedWpm: result.wpm
+                    });
+                }
+            } else {
+                // Handle standard difficulty modes
+                const currentBest = userData.bestWpm?.[result.difficulty] || 0;
+                if (result.wpm > currentBest && result.mode === 'passage' && ['easy', 'medium', 'hard'].includes(result.difficulty)) {
+                    await updateDoc(userRef, {
+                        [`bestWpm.${result.difficulty}`]: result.wpm
+                    });
+                }
             }
         }
 
@@ -256,3 +270,58 @@ export const getUserStatsHistory = async (userId: string): Promise<HistoryEntry[
 // ------ Public Card Data ------
 // Reuses getUserProfile to get theme and bests.
 // Can be extended if we want specific card data separate from profile.
+
+// ------ Leaderboard ------
+
+export interface LeaderboardEntry {
+    rank: number;
+    uid: string;
+    username: string;
+    bestRankedWpm: number;
+}
+
+/**
+ * Get top 50 users by best ranked WPM for leaderboard
+ */
+export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+    const usersRef = collection(db, "users");
+    const q = query(
+        usersRef,
+        where("bestRankedWpm", ">", 0),
+        orderBy("bestRankedWpm", "desc"),
+        limit(50)
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc, index) => ({
+        rank: index + 1,
+        uid: doc.id,
+        username: doc.data().username || 'Anonymous',
+        bestRankedWpm: doc.data().bestRankedWpm || 0
+    }));
+};
+
+/**
+ * Get user's global rank based on their best ranked WPM
+ */
+export const getUserRank = async (userId: string): Promise<number | null> => {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) return null;
+
+    const userData = userSnap.data();
+    const userWpm = userData.bestRankedWpm || 0;
+
+    if (userWpm === 0) return null;
+
+    // Count users with higher WPM
+    const usersRef = collection(db, "users");
+    const q = query(
+        usersRef,
+        where("bestRankedWpm", ">", userWpm)
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.size + 1; // Rank is position after all users with higher WPM
+};

@@ -6,7 +6,7 @@ export const calculateWPM = (correctWords: number, timeElapsed: number): number 
     return Math.round(correctWords / minutes);
 };
 
-import { QUOTES, CODE_KEYWORDS } from './data';
+import { QUOTES, CODE_KEYWORDS, RANKED_PARAGRAPHS } from './data';
 export type Language = 'javascript' | 'python' | 'java' | 'c++' | 'c#' | 'sql' | 'html' | 'css';
 
 export const calculateAccuracy = (correctChars: number, totalChars: number): number => {
@@ -80,14 +80,13 @@ const WORD_COUNTS = {
     hard: 30
 };
 
-export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', category: 'words' | 'quotes' | 'lyrics' | 'code' = 'words', language: Language = 'javascript'): string => {
+export const getRandomPassage = (difficulty: 'easy' | 'medium' | 'hard', category: 'words' | 'quotes' | 'ranked' | 'code' = 'words', language: Language = 'javascript'): string => {
     if (category === 'quotes') {
         return getRandomItem(QUOTES);
     }
 
-    if (category === 'lyrics') {
-        // Lyrics mode requires searching for a song first
-        return 'Search for a song above to start typing lyrics...';
+    if (category === 'ranked') {
+        return getRandomItem(RANKED_PARAGRAPHS);
     }
 
     if (category === 'code') {

@@ -8,6 +8,7 @@ import { UserDataSync } from "./components/user-data-sync";
 import { ThemeProvider } from "./components/theme-provider";
 import { Home } from "./pages/home/home";
 import { Settings } from "./pages/settings/settings";
+import { Leaderboard } from "./pages/leaderboard/leaderboard";
 import { SoundProvider } from "./hooks/use-sound";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
@@ -41,3 +43,4 @@ function App() {
 }
 
 export default App;
+

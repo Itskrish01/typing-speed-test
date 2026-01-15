@@ -3,12 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
-import { Settings, Check, X } from "lucide-react";
+import { Settings, Check, X, Trophy } from "lucide-react";
 import { useGameConfig, useGameActions, useGameStatus } from "../../store/game-store";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { Textarea } from "../ui/textarea";
-import { SongSearch } from "./song-search";
 import { useAuth } from "../../context/auth-context";
 
 
@@ -21,7 +20,7 @@ export const ConfigBar = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const difficulties = ['easy', 'medium', 'hard', 'custom'] as const;
-    const categories = ['words', 'quotes', 'lyrics', 'code'] as const;
+    const categories = ['words', 'quotes', 'ranked', 'code'] as const;
     const languages = ['javascript', 'python', 'java', 'c++', 'c#', 'sql', 'html', 'css'] as const;
     const durations = [15, 30, 60, 120];
     const [isCustomOpen, setIsCustomOpen] = useState(false);
@@ -56,23 +55,35 @@ export const ConfigBar = () => {
         setSearchParams(params, { replace: true });
     }, [difficulty, mode, category, timedDuration, language]);
 
-
-    // Reset category from lyrics if user is not logged in
+    // Reset category from ranked if user is not logged in
     useEffect(() => {
-        if (category === 'lyrics' && !user) {
+        if (category === 'ranked' && !user) {
             setCategory('words');
         }
     }, [user, category, setCategory]);
 
     const handleCategoryClick = (cat: typeof categories[number]) => {
-        // Require login for lyrics mode
-        if (cat === 'lyrics' && !user) {
-            toast.warning('Login required', {
-                description: 'Please login to use the lyrics mode'
-            });
-            navigate('/login');
+        // Require login for ranked mode
+        if (cat === 'ranked') {
+            if (!user) {
+                toast.warning('Login required', {
+                    description: 'Please login to access ranked mode'
+                });
+                navigate('/login');
+                return;
+            }
+            // Set specific config for ranked mode
+            setCategory(cat);
+            setMode('passage');
+            setDifficulty('ranked');
             return;
         }
+
+        // Reset difficulty if coming from ranked (optional, but good practice)
+        if (category === 'ranked') {
+            setDifficulty('easy');
+        }
+
         setCategory(cat);
     };
 
@@ -89,30 +100,37 @@ export const ConfigBar = () => {
         }
     };
 
-    const handleSongSelect = (lyrics: string, songTitle: string, artist: string) => {
-        // Set the lyrics as custom text for typing
-        setCustomText(lyrics);
-    };
-
     return (
-        <div className="flex flex-col items-center gap-4 w-full relative z-50">
+        <nav
+            className="flex flex-col items-center gap-4 w-full relative z-50"
+            role="navigation"
+            aria-label="Game configuration"
+        >
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 w-full">
                 {/* Category Selector */}
-                <div className="flex items-center gap-2">
-                    <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
+                <fieldset className="flex items-center gap-2 border-none p-0 m-0">
+                    <legend className="sr-only">Select category</legend>
+                    <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5" role="radiogroup" aria-label="Category selection">
                         {categories.map((cat) => (
                             <Button
                                 key={cat}
                                 variant={category === cat ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => handleCategoryClick(cat)}
+                                role="radio"
+                                aria-checked={category === cat}
+                                aria-label={cat === 'ranked' ? `${cat} mode (login required)` : `${cat} mode`}
                                 className={cn(
                                     "capitalize h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
                                     category === cat
                                         ? "shadow-sm bg-background text-foreground hover:bg-background"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-background/50",
+                                    // Special highlight for ranked mode
+                                    cat === 'ranked' && category !== 'ranked' && "text-primary/70 hover:text-primary",
+                                    cat === 'ranked' && category === 'ranked' && "bg-primary text-primary-foreground hover:bg-primary/90"
                                 )}
                             >
+                                {cat === 'ranked' && <Trophy className="w-3 h-3 mr-1" aria-hidden="true" />}
                                 {cat}
                             </Button>
                         ))}
@@ -120,12 +138,17 @@ export const ConfigBar = () => {
 
                     {category === 'code' && (
                         <>
-                            <div className="h-6 w-px bg-border hidden sm:block" />
+                            <div className="h-6 w-px bg-border hidden sm:block" aria-hidden="true" />
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="h-8 gap-1 transition-all">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 gap-1 transition-all"
+                                        aria-label={`Select programming language, currently ${language}`}
+                                    >
                                         <span className="capitalize">{language}</span>
-                                        <ChevronDown className="w-3 h-3 opacity-50" />
+                                        <ChevronDown className="w-3 h-3 opacity-50" aria-hidden="true" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
@@ -140,123 +163,142 @@ export const ConfigBar = () => {
                             </DropdownMenu>
                         </>
                     )}
-                </div>
+                </fieldset>
 
-                <div className="h-6 w-px bg-border hidden sm:block" />
+                {/* Only show difficulty/mode/duration when NOT in ranked mode */}
+                {category !== 'ranked' && (
+                    <>
+                        <div className="h-6 w-px bg-border hidden sm:block" aria-hidden="true" />
 
-                {/* Difficulty Selector - Hidden for lyrics, show Song Search instead */}
-                {category === 'lyrics' ? (
-                    <div className="flex items-center gap-2">
-                        <SongSearch
-                            onSongSelect={handleSongSelect}
-                            disabled={isActive}
-                        />
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-2">
-                        <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
-                            {difficulties.map((diff) => (
-                                <Button
-                                    key={diff}
-                                    variant={difficulty === diff ? "default" : "ghost"}
-                                    size="sm"
-                                    onClick={() => {
-                                        if (diff === 'custom') {
-                                            handleCustomClick();
-                                        } else {
-                                            setDifficulty(diff);
-                                        }
-                                    }}
-                                    className={cn(
-                                        "capitalize h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
-                                        difficulty === diff
-                                            ? "shadow-sm bg-background text-foreground hover:bg-background"
-                                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                                    )}
-                                >
-                                    {diff}
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                <div className="h-6 w-px bg-border hidden sm:block" />
-
-                {/* Mode Selector */}
-                <div className="flex items-center gap-2">
-                    <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
-                        <Button
-                            variant={mode === 'timed' ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setMode('timed')}
-                            disabled={difficulty === 'custom'}
-                            className={cn(
-                                "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
-                                mode === 'timed'
-                                    ? "shadow-sm bg-background text-foreground hover:bg-background"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                            )}
-                        >
-                            <span className="hidden sm:inline">Timed</span>
-                            <span className="sm:hidden">60s</span>
-                        </Button>
-                        <Button
-                            variant={mode === 'passage' ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setMode('passage')}
-                            className={cn(
-                                "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
-                                mode === 'passage'
-                                    ? "shadow-sm bg-background text-foreground hover:bg-background"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                            )}
-                        >
-                            Words
-                        </Button>
-                    </div>
-
-                    {mode === 'timed' && (
-                        <>
-                            <div className="h-6 w-px bg-border hidden sm:block" />
-                            <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5">
-                                {durations.map((duration) => (
+                        {/* Difficulty Selector */}
+                        <fieldset className="flex items-center gap-2 border-none p-0 m-0">
+                            <legend className="sr-only">Select difficulty</legend>
+                            <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5" role="radiogroup" aria-label="Difficulty selection">
+                                {difficulties.map((diff) => (
                                     <Button
-                                        key={duration}
-                                        variant={timedDuration === duration ? "default" : "ghost"}
+                                        key={diff}
+                                        variant={difficulty === diff ? "default" : "ghost"}
                                         size="sm"
-                                        onClick={() => setTimedDuration(duration)}
+                                        onClick={() => {
+                                            if (diff === 'custom') {
+                                                handleCustomClick();
+                                            } else {
+                                                setDifficulty(diff);
+                                            }
+                                        }}
+                                        role="radio"
+                                        aria-checked={difficulty === diff}
+                                        aria-label={`${diff} difficulty`}
                                         className={cn(
-                                            "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0 min-w-[3rem]",
-                                            timedDuration === duration
+                                            "capitalize h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                            difficulty === diff
                                                 ? "shadow-sm bg-background text-foreground hover:bg-background"
                                                 : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                                         )}
                                     >
-                                        {duration}s
+                                        {diff}
                                     </Button>
                                 ))}
                             </div>
-                        </>
-                    )}
-                </div>
+                        </fieldset>
+
+                        <div className="h-6 w-px bg-border hidden sm:block" aria-hidden="true" />
+
+                        {/* Mode Selector */}
+                        <fieldset className="flex items-center gap-2 border-none p-0 m-0">
+                            <legend className="sr-only">Select game mode</legend>
+                            <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5" role="radiogroup" aria-label="Game mode selection">
+                                <Button
+                                    variant={mode === 'timed' ? "default" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setMode('timed')}
+                                    disabled={difficulty === 'custom'}
+                                    role="radio"
+                                    aria-checked={mode === 'timed'}
+                                    aria-label="Timed mode"
+                                    className={cn(
+                                        "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                        mode === 'timed'
+                                            ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                                    )}
+                                >
+                                    <span className="hidden sm:inline">Timed</span>
+                                    <span className="sm:hidden">60s</span>
+                                </Button>
+                                <Button
+                                    variant={mode === 'passage' ? "default" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setMode('passage')}
+                                    role="radio"
+                                    aria-checked={mode === 'passage'}
+                                    aria-label="Passage mode"
+                                    className={cn(
+                                        "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0",
+                                        mode === 'passage'
+                                            ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                                    )}
+                                >
+                                    Words
+                                </Button>
+                            </div>
+
+                            {mode === 'timed' && (
+                                <>
+                                    <div className="h-6 w-px bg-border hidden sm:block" aria-hidden="true" />
+                                    <div className="flex bg-secondary/30 rounded-lg p-1 gap-0.5" role="radiogroup" aria-label="Timer duration selection">
+                                        {durations.map((duration) => (
+                                            <Button
+                                                key={duration}
+                                                variant={timedDuration === duration ? "default" : "ghost"}
+                                                size="sm"
+                                                onClick={() => setTimedDuration(duration)}
+                                                role="radio"
+                                                aria-checked={timedDuration === duration}
+                                                aria-label={`${duration} seconds`}
+                                                className={cn(
+                                                    "h-7 sm:h-8 px-3 text-xs sm:text-sm transition-all duration-200 focus-visible:ring-offset-0 min-w-12",
+                                                    timedDuration === duration
+                                                        ? "shadow-sm bg-background text-foreground hover:bg-background"
+                                                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                                                )}
+                                            >
+                                                {duration}s
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </fieldset>
+                    </>
+                )}
             </div>
 
             {/* Custom Text Dialog */}
             {isCustomOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="custom-text-title"
+                >
                     <div
                         ref={dialogRef}
                         className="w-full max-w-2xl bg-card rounded-xl shadow-2xl p-6 flex flex-col gap-4 animate-in zoom-in-95 duration-200"
                     >
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                <Settings className="w-5 h-5" />
+                            <h3 id="custom-text-title" className="text-lg font-semibold flex items-center gap-2">
+                                <Settings className="w-5 h-5" aria-hidden="true" />
                                 Custom Text
                             </h3>
-                            <Button variant="ghost" size="icon" onClick={() => setIsCustomOpen(false)} aria-label="Close custom text dialog">
-                                <X className="w-5 h-5" />
-                                <span className="sr-only">Close</span>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsCustomOpen(false)}
+                                aria-label="Close custom text dialog"
+                            >
+                                <X className="w-5 h-5" aria-hidden="true" />
                             </Button>
                         </div>
 
@@ -266,6 +308,7 @@ export const ConfigBar = () => {
                             placeholder="Paste your text here (max 1000 words)..."
                             className="w-full h-48 p-4 rounded-lg bg-secondary border-none"
                             autoFocus
+                            aria-label="Custom text input"
                         />
 
                         <div className="flex justify-end gap-3">
@@ -273,13 +316,13 @@ export const ConfigBar = () => {
                                 Cancel
                             </Button>
                             <Button onClick={handleCustomSubmit} disabled={customInput.trim().length === 0}>
-                                <Check className="w-4 h-4 mr-2" />
+                                <Check className="w-4 h-4 mr-2" aria-hidden="true" />
                                 Use Text
                             </Button>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+        </nav>
     );
 };

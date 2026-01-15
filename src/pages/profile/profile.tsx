@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { HistoryTable } from "@/components/ui-blocks/history-table";
-import { getPaginatedHistory, getUserStatsHistory, ensureUserProfile, type UserProfile, type HistoryEntry } from "@/lib/firestore-helpers";
+import { getPaginatedHistory, getUserStatsHistory, ensureUserProfile, getUserRank, type UserProfile, type HistoryEntry } from "@/lib/firestore-helpers";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Header } from "@/components/ui-blocks/header";
 import { ShareProfile } from "@/components/ui-blocks/share-profile";
@@ -19,7 +19,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Filter, ArrowUpDown, Check } from "lucide-react";
+import { Filter, ArrowUpDown, Check, Trophy } from "lucide-react";
 
 export const Profile = () => {
     const { user } = useAuth();
@@ -28,6 +28,7 @@ export const Profile = () => {
     const [history, setHistory] = useState<HistoryEntry[]>([]); // For list
     const [statsHistory, setStatsHistory] = useState<HistoryEntry[]>([]); // For heatmap/stats
     const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [globalRank, setGlobalRank] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -48,12 +49,14 @@ export const Profile = () => {
     useEffect(() => {
         const fetchProfileData = async () => {
             if (user) {
-                const [statsResult, profileData] = await Promise.all([
+                const [statsResult, profileData, rank] = await Promise.all([
                     getUserStatsHistory(user.uid),
-                    ensureUserProfile(user)
+                    ensureUserProfile(user),
+                    getUserRank(user.uid)
                 ]);
                 setStatsHistory(statsResult);
                 setProfile(profileData);
+                setGlobalRank(rank);
                 setLoading(false);
             }
         };
@@ -137,6 +140,19 @@ export const Profile = () => {
                 )}
 
                 <StatsOverview history={statsHistory} personalBests={profile?.bestWpm} />
+
+                {/* Global Rank Card */}
+                {globalRank && (
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 flex items-center gap-4">
+                        <div className="p-3 rounded-lg bg-primary/20">
+                            <Trophy className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">Global Rank (Ranked Mode)</p>
+                            <p className="text-2xl font-bold text-primary">#{globalRank}</p>
+                        </div>
+                    </div>
+                )}
 
                 <div className="bg-secondary/20 rounded-xl p-6">
                     <div className="flex justify-between items-center mb-6">

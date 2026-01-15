@@ -73,8 +73,15 @@ export const ThemeFooter = () => {
     return (
         <>
             <div className="w-full py-6 flex justify-between items-end">
-                {/* Left Side: Inspiration Link */}
-                <div className="pointer-events-auto flex items-center gap-1.5 text-xs text-muted-foreground/50">
+                {/* Left Side: Leaderboard & Inspiration Link */}
+                <div className="pointer-events-auto flex items-center gap-3 text-xs text-muted-foreground/50">
+                    <a
+                        href="/leaderboard"
+                        className="hover:text-foreground transition-colors"
+                    >
+                        leaderboard
+                    </a>
+                    <span className="opacity-50">•</span>
                     <span>inspired by</span>
                     <a
                         href="https://monkeytype.com"

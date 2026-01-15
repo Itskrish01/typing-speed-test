@@ -1,4 +1,4 @@
-export type Difficulty = 'easy' | 'medium' | 'hard' | 'custom';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'custom' | 'ranked';
 
 export interface StoredBest {
     wpm: number;
@@ -11,5 +11,6 @@ export const EMPTY_PERSONAL_BESTS: Record<Difficulty, StoredBest | null> = {
     easy: null,
     medium: null,
     hard: null,
-    custom: null
+    custom: null,
+    ranked: null
 };
