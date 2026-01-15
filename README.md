@@ -51,13 +51,27 @@ I built a robust **Theming System** using `next-themes` and Tailwind CSS variabl
 *   **Timed Mode**: The classic 60-second sprint.
 *   **Custom Mode**: Paste your own text (great for practicing code snippets or specific articles).
 *   **Code Mode**: Practice typing actual keywords from your preferred programming language.
+*   **Ranked Mode**: Compete globally with complex paragraphs featuring special characters and punctuation.
 
 ### 🧠 Adaptive Difficulty
 *   **Easy**: Common, short words.
 *   **Medium**: Standard vocabulary.
 *   **Hard**: Complex, technical, and long words (e.g., "polymorphism", "infrastructure").
 
-### 📊 Vital Statistics
+### 🏆 Ranked Mode & Leaderboard
+*   **Complex Paragraphs**: Practice with challenging text including punctuation and special characters.
+*   **Global Leaderboard**: Compete against other typists for the top 50 spots.
+*   **Global Rank**: See your ranking on your profile.
+*   **Fixed Configuration**: Ranked mode uses standardized settings for fair competition.
+
+### 📊 Result Page (`/result`)
+*   **Detailed Statistics**: WPM, accuracy, time, difficulty, and category.
+*   **Character Breakdown**: Correct, incorrect, extra, and missed characters.
+*   **Mistake Analysis**: Visual display of each typo (expected → typed).
+*   **Test History**: View and compare your last 5 tests.
+*   **Confetti Celebration**: Fireworks when you set a new personal best!
+
+### 📈 Vital Statistics
 *   Real-time **WPM** & **Accuracy**.
 *   **Personal Bests** saved locally and synced to the cloud when logged in.
 *   **Visual Feedback**: Celebratory confetti when you break a record!
@@ -68,6 +82,7 @@ I built a robust **Theming System** using `next-themes` and Tailwind CSS variabl
 *   **User Profiles**: Unique usernames and public profile cards.
 *   **Test History**: View your past typing tests with detailed stats.
 *   **Activity Heatmap**: Visualize your daily typing activity over time.
+*   **Mistake Tracking**: Character-level mistake data stored for analysis.
 
 ### 🎨 15+ Hand-Crafted Themes
 Includes Light, Dark, Espresso, Midnight, Forest, Ruby, Synthwave, and more.
