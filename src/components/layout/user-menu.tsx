@@ -9,7 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User as UserIcon, LogOut, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
+import { LogOut, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
 
 export const UserMenu = () => {
     const { user, loading } = useAuth();
@@ -24,28 +24,20 @@ export const UserMenu = () => {
 
     if (!user) {
         return (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu">
-                        <UserIcon className="h-5 w-5" />
-                        <span className="sr-only">User menu</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                        <Link to="/login" className="flex items-center gap-2 cursor-pointer">
-                            <LogIn className="h-4 w-4" />
-                            <span>Login</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link to="/signup" className="flex items-center gap-2 cursor-pointer">
-                            <UserPlus className="h-4 w-4" />
-                            <span>Sign Up</span>
-                        </Link>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" asChild>
+                    <Link to="/login">
+                        <LogIn className="w-4 h-4 mr-2" />
+                        Login
+                    </Link>
+                </Button>
+                <Button asChild>
+                    <Link to="/signup">
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Register
+                    </Link>
+                </Button>
+            </div>
         );
     }
 

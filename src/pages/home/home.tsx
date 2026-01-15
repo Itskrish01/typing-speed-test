@@ -110,7 +110,7 @@ export const Home = () => {
     useEffect(() => {
         if (!isFinished) {
             hasSavedRef.current = false;
-        } else if (isFinished && user && !hasSavedRef.current) {
+        } else if (isFinished && !hasSavedRef.current) {
             hasSavedRef.current = true;
 
             const characters = {
@@ -129,77 +129,97 @@ export const Home = () => {
                 }
             }
 
-            // Save to Firestore with verification
-            const handleSaveAndNavigate = async () => {
-                try {
-                    await saveTestResult(user.uid, {
-                        wpm: results.wpm,
-                        accuracy: results.accuracy,
-                        errors: results.errorCount,
-                        difficulty,
-                        mode,
-                        category,
-                        characters,
-                        mistakes,
-                        time: results.timerCount
-                    });
+            if (user) {
+                // Save to Firestore with verification
+                const handleSaveAndNavigate = async () => {
+                    try {
+                        await saveTestResult(user.uid, {
+                            wpm: results.wpm,
+                            accuracy: results.accuracy,
+                            errors: results.errorCount,
+                            difficulty,
+                            mode,
+                            category,
+                            characters,
+                            mistakes,
+                            time: results.timerCount
+                        });
 
-                    // Success - Navigate with verified status
-                    navigate('/result', {
-                        state: {
-                            justFinished: true,
-                            result: {
-                                wpm: results.wpm,
-                                accuracy: results.accuracy,
-                                time: results.timerCount,
-                                difficulty,
-                                category,
-                                characters,
-                                mistakes,
-                                isNewHighScore: results.wasNewHighScore,
-                                isVerified: true
+                        // Success - Navigate with verified status
+                        navigate('/result', {
+                            state: {
+                                justFinished: true,
+                                result: {
+                                    wpm: results.wpm,
+                                    accuracy: results.accuracy,
+                                    time: results.timerCount,
+                                    difficulty,
+                                    category,
+                                    characters,
+                                    mistakes,
+                                    isNewHighScore: results.wasNewHighScore,
+                                    isVerified: true
+                                }
                             }
-                        }
-                    });
-                } catch (error: any) {
-                    console.error("Failed to save result:", error);
+                        });
+                    } catch (error: any) {
+                        console.error("Failed to save result:", error);
 
-                    const isCheat = error?.code === 'permission-denied' ||
-                        (error?.message && error.message.includes('Missing or insufficient permissions'));
+                        const isCheat = error?.code === 'permission-denied' ||
+                            (error?.message && error.message.includes('Missing or insufficient permissions'));
 
-                    const validationError = isCheat
-                        ? 'Anti-Cheat: Result Rejected (Suspected Automation)'
-                        : 'Verification Failed: Could not save result';
+                        const validationError = isCheat
+                            ? 'Anti-Cheat: Result Rejected (Suspected Automation)'
+                            : 'Verification Failed: Could not save result';
 
-                    // Failure - Navigate with error status
-                    navigate('/result', {
-                        state: {
-                            justFinished: true,
-                            result: {
-                                wpm: results.wpm,
-                                accuracy: results.accuracy,
-                                time: results.timerCount,
-                                difficulty,
-                                category,
-                                characters,
-                                mistakes,
-                                isNewHighScore: false, // Invalidate high score
-                                isVerified: false,
-                                validationError
+                        // Failure - Navigate with error status
+                        navigate('/result', {
+                            state: {
+                                justFinished: true,
+                                result: {
+                                    wpm: results.wpm,
+                                    accuracy: results.accuracy,
+                                    time: results.timerCount,
+                                    difficulty,
+                                    category,
+                                    characters,
+                                    mistakes,
+                                    isNewHighScore: false, // Invalidate high score
+                                    isVerified: false,
+                                    validationError
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    // Show toast too
-                    if (isCheat) {
-                        toast.error("Result Rejected: Anti-Cheat Triggered");
-                    } else {
-                        toast.error("Failed to save result");
+                        // Show toast too
+                        if (isCheat) {
+                            toast.error("Result Rejected: Anti-Cheat Triggered");
+                        } else {
+                            toast.error("Failed to save result");
+                        }
                     }
-                }
-            };
+                };
 
-            handleSaveAndNavigate();
+                handleSaveAndNavigate();
+            } else {
+                // Guest - Navigate with prompt
+                navigate('/result', {
+                    state: {
+                        justFinished: true,
+                        showLoginPrompt: true,
+                        result: {
+                            wpm: results.wpm,
+                            accuracy: results.accuracy,
+                            time: results.timerCount,
+                            difficulty,
+                            category,
+                            characters,
+                            mistakes,
+                            isNewHighScore: false // No sessions for guests
+                        }
+                    }
+                });
+            }
         }
     }, [isFinished, user, results, difficulty, mode, category, navigate]);
 

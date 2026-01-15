@@ -23,36 +23,22 @@ export const UserDataSync = ({ children }: { children: React.ReactNode }) => {
 
             if (user) {
                 try {
-                    // Check if we need to fetch from server or can use cached data
-                    const lastSync = localStorage.getItem(`${SYNC_CACHE_KEY}_${user.uid}`);
-                    const cachedProfile = localStorage.getItem(`tapixo_profile_${user.uid}`);
-                    const now = Date.now();
-
-                    // If we have recent cached data, use it instead of fetching
-                    if (lastSync && cachedProfile && (now - parseInt(lastSync)) < SYNC_CACHE_DURATION) {
-                        const profile = JSON.parse(cachedProfile);
-                        if (profile.bestWpm) {
-                            const mappedBests = mapFirestoreBestsToStore(profile.bestWpm as Record<string, number>);
+                    // Fetch fresh data from Firestore and ensure profile exists/is valid
+                    const profile = await ensureUserProfile(user);
+                    if (profile) {
+                        // Map scores (including ranked)
+                        if (profile.bestWpm || profile.bestRankedWpm) {
+                            const scoresToMap = {
+                                ...(profile.bestWpm || {}),
+                                ranked: profile.bestRankedWpm || 0
+                            };
+                            const mappedBests = mapFirestoreBestsToStore(scoresToMap as Record<string, number>);
                             setPersonalBests(mappedBests);
                         }
+
+                        // Set theme
                         if (profile.themePreference) {
                             setTheme(profile.themePreference as any);
-                        }
-                    } else {
-                        // Fetch fresh data from Firestore and ensure profile exists/is valid
-                        const profile = await ensureUserProfile(user);
-                        if (profile) {
-                            // Cache the profile data
-                            localStorage.setItem(`tapixo_profile_${user.uid}`, JSON.stringify(profile));
-                            localStorage.setItem(`${SYNC_CACHE_KEY}_${user.uid}`, now.toString());
-
-                            if (profile.bestWpm) {
-                                const mappedBests = mapFirestoreBestsToStore(profile.bestWpm as Record<string, number>);
-                                setPersonalBests(mappedBests);
-                            }
-                            if (profile.themePreference) {
-                                setTheme(profile.themePreference as any);
-                            }
                         }
                     }
                 } catch (error) {
@@ -63,7 +49,7 @@ export const UserDataSync = ({ children }: { children: React.ReactNode }) => {
                 setPersonalBests({ ...EMPTY_PERSONAL_BESTS });
             }
 
-            // Done syncing (or determined no sync needed)
+            // Done syncing
             setIsSyncing(false);
         };
 

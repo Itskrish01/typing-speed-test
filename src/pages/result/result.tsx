@@ -8,8 +8,10 @@ import { RotateCcw, Trophy, Clock, Keyboard, Zap, Crown, ArrowLeft, Calendar, Al
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
+
 interface LocationState {
     justFinished?: boolean;
+    showLoginPrompt?: boolean;
     result?: {
         wpm: number;
         accuracy: number;
@@ -26,6 +28,7 @@ interface LocationState {
         isNewHighScore: boolean;
         isVerified?: boolean;
         validationError?: string;
+        showLoginPrompt?: boolean;
     };
 }
 
@@ -39,6 +42,7 @@ export const Result = () => {
     const [recentTests, setRecentTests] = useState<HistoryEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState(0);
+
 
     useEffect(() => {
         const fetchHistory = async () => {
@@ -118,7 +122,7 @@ export const Result = () => {
     }, [user, displayResult?.category]);
     const isNewHighScore = displayResult?.isNewHighScore || false;
 
-    if (!user) {
+    if (!user && !displayResult) {
         return (
             <PageLayout>
                 <div className="flex-1 flex flex-col items-center justify-center gap-4">
@@ -349,7 +353,22 @@ export const Result = () => {
                         </div>
                     </section>
                 )}
+                {!user && (
+                    <section className="mt-8">
+                        <div className="rounded-xl p-8 flex flex-col items-center text-center gap-4">
+
+                            <h2 className="text-2xl font-bold">Track Your Progress</h2>
+                            <p className="text-muted-foreground max-w-md">
+                                Sign in to save your results, view your history, and compete on the global leaderboard.
+                            </p>
+                            <div className="flex gap-4 mt-2">
+                                <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
+                                <Button onClick={() => navigate('/signup')}>Register</Button>
+                            </div>
+                        </div>
+                    </section>
+                )}
             </div>
-        </PageLayout>
+        </PageLayout >
     );
 };

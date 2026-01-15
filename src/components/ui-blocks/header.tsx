@@ -71,47 +71,48 @@ export const Header = () => {
                         <MuteButton />
                     </>
                 )}
-                {/* Personal Best Dropdown */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-transparent cursor-pointer" aria-label="View personal bests">
-                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground transition-colors shrink-0">
-                                <Trophy className="w-4 h-4" />
-                            </span>
-                            <span className="hidden sm:flex flex-col items-start gap-0.5 text-right">
-                                <span className="text-[10px] uppercase font-bold text-muted-foreground leading-none whitespace-nowrap">Personal Best</span>
-                                <span className="flex items-center gap-1">
-                                    <span className="text-base font-bold tabular-nums leading-none">
-                                        {currentBest} wpm
-                                    </span>
-                                    <ChevronDown className="w-3 h-3 text-muted-foreground opacity-50" />
+                {user && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="flex items-center gap-2 group h-10 hover:bg-transparent cursor-pointer" aria-label="View personal bests">
+                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-foreground transition-colors shrink-0">
+                                    <Trophy className="w-4 h-4" />
                                 </span>
-                            </span>
-                            {/* Mobile only WPM display */}
-                            <span className="sm:hidden text-sm font-bold tabular-nums leading-none">
-                                {currentBest}
-                            </span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('easy')}>
-                            <span className="font-medium text-chart-2">Easy</span>
-                            <span className="font-bold">{personalBests.easy?.wpm || 0} wpm</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('medium')}>
-                            <span className="font-medium text-chart-3">Medium</span>
-                            <span className="font-bold">{personalBests.medium?.wpm || 0} wpm</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('hard')}>
-                            <span className="font-medium text-destructive">Hard</span>
-                            <span className="font-bold">{personalBests.hard?.wpm || 0} wpm</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => setDifficulty('ranked')}>
-                            <span className="font-medium text-primary">Ranked</span>
-                            <span className="font-bold">{personalBests.ranked?.wpm || 0} wpm</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                <span className="hidden sm:flex flex-col items-start gap-0.5 text-right">
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground leading-none whitespace-nowrap">Personal Best</span>
+                                    <span className="flex items-center gap-1">
+                                        <span className="text-base font-bold tabular-nums leading-none">
+                                            {currentBest} wpm
+                                        </span>
+                                        <ChevronDown className="w-3 h-3 text-muted-foreground opacity-50" />
+                                    </span>
+                                </span>
+                                {/* Mobile only WPM display */}
+                                <span className="sm:hidden text-sm font-bold tabular-nums leading-none">
+                                    {currentBest}
+                                </span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => { setDifficulty('easy'); setCategory('words'); }}>
+                                <span className="font-medium text-chart-2">Easy</span>
+                                <span className="font-bold">{personalBests.easy?.wpm || 0} wpm</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => { setDifficulty('medium'); setCategory('words'); }}>
+                                <span className="font-medium text-chart-3">Medium</span>
+                                <span className="font-bold">{personalBests.medium?.wpm || 0} wpm</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => { setDifficulty('hard'); setCategory('words'); }}>
+                                <span className="font-medium text-destructive">Hard</span>
+                                <span className="font-bold">{personalBests.hard?.wpm || 0} wpm</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="flex justify-between cursor-pointer" onClick={() => { setCategory('ranked'); setDifficulty('ranked'); }}>
+                                <span className="font-medium text-primary">Ranked</span>
+                                <span className="font-bold">{personalBests.ranked?.wpm || 0} wpm</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
 
                 <div className="w-px h-8 bg-border hidden sm:block" />
 
