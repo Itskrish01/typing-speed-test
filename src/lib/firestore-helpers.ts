@@ -101,38 +101,77 @@ export const getUserProfile = async (userId: string) => {
  * Ensures a user profile exists. Creates one if missing.
  * Useful for users who signed up before profile creation was implemented.
  */
+/**
+ * Ensures a user profile exists. Creates one if missing.
+ * Also patches incomplete profiles (missing required fields).
+ */
 export const ensureUserProfile = async (user: any) => {
     if (!user) return null;
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
+    const defaultProfile = {
+        uid: user.uid,
+        email: user.email,
+        username: user.displayName || user.email?.split('@')[0] || 'user',
+        displayName: user.displayName || user.email?.split('@')[0] || 'user',
+        createdAt: serverTimestamp(),
+        themePreference: "dark",
+        bestWpm: { easy: 0, medium: 0, hard: 0 },
+        bestRankedWpm: 0,
+        soundPreference: "off"
+    };
+
     if (!userSnap.exists()) {
-        const newProfile = {
-            uid: user.uid,
-            email: user.email,
-            username: user.displayName || user.email?.split('@')[0] || 'user',
-            displayName: user.displayName || user.email?.split('@')[0] || 'user',
-            createdAt: serverTimestamp(),
-            themePreference: "dark",
-            bestWpm: { easy: 0, medium: 0, hard: 0 },
-            bestRankedWpm: 0,
-            soundPreference: "off"
-        };
-        await setDoc(userRef, newProfile);
-        return newProfile as UserProfile;
+        await setDoc(userRef, defaultProfile);
+        return defaultProfile as UserProfile;
     }
-    return userSnap.data() as UserProfile;
+
+    // Patch incomplete profiles (e.g. if created by partial update)
+    const data = userSnap.data();
+    const patches: any = {};
+    let needsPatch = false;
+
+    if (!data.bestWpm) { patches.bestWpm = { easy: 0, medium: 0, hard: 0 }; needsPatch = true; }
+    if (!data.createdAt) { patches.createdAt = serverTimestamp(); needsPatch = true; }
+    if (data.bestRankedWpm === undefined) { patches.bestRankedWpm = 0; needsPatch = true; }
+    if (!data.email && user.email) { patches.email = user.email; needsPatch = true; }
+
+    if (needsPatch) {
+        await setDoc(userRef, patches, { merge: true });
+        return { ...data, ...patches } as UserProfile;
+    }
+
+    return data as UserProfile;
 };
 
 export const updateUserTheme = async (userId: string, theme: string) => {
     const userRef = doc(db, "users", userId);
-    // Use setDoc with merge to create doc if it doesn't exist
-    await setDoc(userRef, { themePreference: theme }, { merge: true });
+    // Use updateDoc to avoid creating partial documents
+    // UserDataSync guarantees profile existence
+    try {
+        await updateDoc(userRef, { themePreference: theme });
+        invalidateProfileCache(userId);
+    } catch {
+        // If doc missing, we can't fix it here without user object
+        // UserDataSync will fix it on next load
+    }
 };
 
 export const updateUserSoundPreference = async (userId: string, sound: string) => {
     const userRef = doc(db, "users", userId);
-    await setDoc(userRef, { soundPreference: sound }, { merge: true });
+    try {
+        await updateDoc(userRef, { soundPreference: sound });
+        invalidateProfileCache(userId);
+    } catch {
+        // Ignore if doc missing
+    }
+};
+
+// Helper to invalidate profile cache
+const invalidateProfileCache = (userId: string) => {
+    localStorage.removeItem(`tapixo_profile_${userId}`);
+    localStorage.removeItem(`tapixo_last_sync_${userId}`);
 };
 
 export const checkUsernameAvailability = async (username: string): Promise<boolean> => {

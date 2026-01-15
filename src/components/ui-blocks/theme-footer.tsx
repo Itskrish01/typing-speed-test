@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { updateUserTheme } from "@/lib/firestore-helpers";
 import { saveTheme } from "@/lib/storage-helpers";
 import { Palette, Check } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
     Command,
     CommandEmpty,
@@ -106,6 +106,7 @@ export const ThemeFooter = () => {
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="p-0 overflow-hidden max-w-xl bg-popover/95 backdrop-blur-xl border-none shadow-2xl">
+                    <DialogTitle className="sr-only">Select Theme</DialogTitle>
                     <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
                         <CommandInput
                             value={search}

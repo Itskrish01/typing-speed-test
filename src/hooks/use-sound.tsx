@@ -45,7 +45,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Load preferences (Sound Type & Mute)
     useEffect(() => {
-        // Sound Type
+        // Sound Type - check localStorage first
         const storedSound = localStorage.getItem('soundPreference') as SoundType;
         if (storedSound && (storedSound === 'off' || SOUND_TYPES.includes(storedSound as any))) {
             setCurrentSound(storedSound);
@@ -57,16 +57,22 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
             setMuted(storedMute === 'true');
         }
 
+        // If logged in, check cached profile for sound preference
+        // This avoids duplicate Firestore requests since UserDataSync already fetches profile
         if (user) {
-            import('@/lib/firestore-helpers').then(({ getUserProfile }) => {
-                getUserProfile(user.uid).then(profile => {
+            const cachedProfile = localStorage.getItem(`tapixo_profile_${user.uid}`);
+            if (cachedProfile) {
+                try {
+                    const profile = JSON.parse(cachedProfile);
                     const pref = profile?.soundPreference as SoundType;
                     if (pref && (pref === 'off' || SOUND_TYPES.includes(pref as any))) {
                         setCurrentSound(pref);
                         localStorage.setItem('soundPreference', pref);
                     }
-                });
-            });
+                } catch {
+                    // Ignore parse errors, localStorage data might be corrupted
+                }
+            }
         }
     }, [user]);
 
