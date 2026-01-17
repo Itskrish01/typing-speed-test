@@ -76,20 +76,13 @@ export const Home = () => {
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Prevent Tab from moving focus away during active game only
-            if (e.key === 'Tab' && isActive) {
-                e.preventDefault();
-                handleRestart();
-            }
 
-            if (e.key === 'Enter' && isFinished) {
-                if (document.activeElement === restartButtonRef.current) {
-                    return;
+            if (e.key === 'Tab' && !e.shiftKey) {
+                const active = document.activeElement;
+                if ((active === inputRef.current || active === document.body) && restartButtonRef.current) {
+                    e.preventDefault();
+                    restartButtonRef.current.focus();
                 }
-                handleRestart();
-            }
-            if (e.key === 'Escape') {
-                handleRestart();
             }
 
             // Focus on key press if ready and focused - ONLY if not already in an input/textarea

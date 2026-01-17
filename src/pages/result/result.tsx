@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
 import { useAuth } from '@/context/auth-context';
@@ -44,6 +44,24 @@ export const Result = () => {
     const [recentTests, setRecentTests] = useState<HistoryEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState(0);
+
+    const nextTestButtonRef = useRef<HTMLButtonElement>(null);
+
+    // Keyboard navigation focus
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Tab' && !e.shiftKey) {
+                const active = document.activeElement;
+                if ((active === document.body) && nextTestButtonRef.current) {
+                    e.preventDefault();
+                    nextTestButtonRef.current.focus();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     useEffect(() => {
         resetGame();
@@ -294,7 +312,7 @@ export const Result = () => {
                         </div>
                     )}
 
-                    <Button onClick={() => { resetGame(); navigate('/'); }} size="lg" className="mt-4 gap-2 px-8">
+                    <Button onClick={() => { resetGame(); navigate('/'); }} size="lg" className="mt-4 gap-2 px-8" ref={nextTestButtonRef}>
                         <RotateCcw className="w-4 h-4" />
                         New Test
                     </Button>
