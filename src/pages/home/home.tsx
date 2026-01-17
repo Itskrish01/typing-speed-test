@@ -19,6 +19,7 @@ import { ConfigBar } from "@/components/ui-blocks/config-bar";
 import { TypingArea } from "@/components/ui-blocks/typing-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { calculateCheatRiskScore, type Keystroke } from "@/lib/anti-cheat";
 
 export const Home = () => {
     const { isReady, isActive, isFinished, isFocused } = useGameStatus();
@@ -33,6 +34,8 @@ export const Home = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const restartButtonRef = useRef<HTMLButtonElement>(null);
+    const lastKeystrokeTimeRef = useRef<number>(0); // Track time for anti-cheat logging
+    const keystrokesHistoryRef = useRef<Keystroke[]>([]); // Full history for analysis
 
     // Initialize on mount
     useEffect(() => {
@@ -113,6 +116,7 @@ export const Home = () => {
         } else if (isFinished && !hasSavedRef.current) {
             hasSavedRef.current = true;
 
+            // Calculate stats first (needed for both success and failure states)
             const characters = {
                 correct: results.userInput.split('').filter((c, i) => c === results.text[i]).length,
                 incorrect: results.errorCount,
@@ -127,6 +131,32 @@ export const Home = () => {
                 if (results.text[i] !== results.userInput[i]) {
                     mistakes.push({ expected: results.text[i], typed: results.userInput[i] });
                 }
+            }
+
+            // Anti-Cheat Check
+            const riskScore = calculateCheatRiskScore(keystrokesHistoryRef.current);
+
+            if (riskScore >= 0.5) {
+                toast.error("Result Rejected: Anti-Cheat Triggered (Client-Side)");
+
+                navigate('/result', {
+                    state: {
+                        justFinished: true,
+                        result: {
+                            wpm: results.wpm,
+                            accuracy: results.accuracy,
+                            time: results.timerCount,
+                            difficulty,
+                            category,
+                            characters,
+                            mistakes,
+                            isNewHighScore: false,
+                            isVerified: false,
+                            validationError: 'Anti-Cheat: Result Rejected (Suspected Automation)'
+                        }
+                    }
+                });
+                return; // STOP EXECUTION HERE
             }
 
             if (user) {
@@ -224,9 +254,21 @@ export const Home = () => {
     }, [isFinished, user, results, difficulty, mode, category, navigate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const now = Date.now();
+        lastKeystrokeTimeRef.current = now;
+
         const val = e.target.value;
         const oldLength = userInput.length;
         const newLength = val.length;
+
+        // Record keystroke for anti-cheat
+        if (newLength > oldLength) {
+            const char = val[newLength - 1];
+            keystrokesHistoryRef.current.push({
+                key: char,
+                timestamp: now
+            });
+        }
 
         // Only play sound on character addition (not backspace)
         if (newLength > oldLength) {
@@ -256,6 +298,8 @@ export const Home = () => {
     };
 
     const handleRestart = () => {
+        lastKeystrokeTimeRef.current = 0;
+        keystrokesHistoryRef.current = [];
         resetGame();
         setTimeout(focusInput, 50);
     };
