@@ -73,7 +73,7 @@ export const ThemeFooter = () => {
 
     return (
         <>
-            <div className="w-full py-6 flex justify-between items-end">
+            <div className="w-full py-6 flex flex-col items-center gap-4 md:flex-row md:justify-between md:items-end">
                 {/* Left Side: Leaderboard & Inspiration Link */}
                 <div className="pointer-events-auto flex items-center gap-3 text-xs text-muted-foreground/50">
                     <Link
