@@ -49,14 +49,14 @@ export const TypingArea = ({
                 const scrollRect = scrollContainer.getBoundingClientRect();
                 const charRelativeTop = charRect.top - scrollRect.top + scrollContainer.scrollTop;
                 const lineHeight = charRect.height;
-                
+
                 // Target position: keep the current line within the first ~2 lines visible
                 const targetScrollTop = Math.max(0, charRelativeTop - lineHeight);
-                
+
                 // Only scroll if the current character is outside comfortable viewing range
                 const visibleTop = scrollContainer.scrollTop;
                 const charAbsoluteTop = charRelativeTop;
-                
+
                 // Scroll when the current line is below the first 2 lines or above the visible area
                 if (charAbsoluteTop > visibleTop + lineHeight * 2 || charAbsoluteTop < visibleTop) {
                     scrollContainer.scrollTo({
@@ -117,7 +117,7 @@ export const TypingArea = ({
                 >
                     <div className="flex items-center gap-2 text-muted-foreground">
                         <MousePointer className="w-4 h-4" />
-                        <span className="text-lg font-mono font-bold">Click here or press any key to focus</span>
+                        <span className="text-lg font-mono font-bold">Click or Tap to Start</span>
                     </div>
                 </div>
             )}

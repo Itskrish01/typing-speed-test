@@ -101,7 +101,7 @@ const initialState: GameState = {
     language: 'javascript',
     customText: '',
     status: 'ready',
-    isFocused: true,
+    isFocused: false,
     startTime: null,
     endTime: null,
     text: '',

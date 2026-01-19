@@ -40,22 +40,16 @@ export const Home = () => {
     // Initialize on mount
     useEffect(() => {
         initGame();
+        // Force focus on mount for mobile/desktop
+        const timeoutId = setTimeout(() => {
+            inputRef.current?.focus({ preventScroll: true });
+        }, 100);
+        return () => clearTimeout(timeoutId);
     }, []);
 
-    // Window Focus Handling
-    useEffect(() => {
-        const onFocus = () => setFocused(true);
-        const onBlur = () => setFocused(false);
-
-        window.addEventListener('focus', onFocus);
-        window.addEventListener('blur', onBlur);
-        setFocused(document.hasFocus());
-
-        return () => {
-            window.removeEventListener('focus', onFocus);
-            window.removeEventListener('blur', onBlur);
-        };
-    }, [setFocused]);
+    // Focus Handlers
+    const handleInputFocus = () => setFocused(true);
+    const handleInputBlur = () => setFocused(false);
 
     // Timer effect
     useEffect(() => {
@@ -334,11 +328,14 @@ export const Home = () => {
                                     type="text"
                                     value={userInput}
                                     onChange={handleInputChange}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
                                     autoComplete="off"
                                     autoCapitalize="off"
                                     autoCorrect="off"
                                     spellCheck="false"
+                                    autoFocus
                                     disabled={isFinished}
                                     aria-label="Type the passage here"
                                 />
