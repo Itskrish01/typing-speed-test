@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth-context";
 import { saveTestResult } from "../../lib/firestore-helpers";
@@ -20,6 +20,7 @@ import { TypingArea } from "@/components/ui-blocks/typing-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { calculateCheatRiskScore, type Keystroke } from "@/lib/anti-cheat";
+import { restrictDeletion, getMinAllowedLength } from "@/lib/input-helpers";
 
 export const Home = () => {
     const { isReady, isActive, isFinished, isFocused } = useGameStatus();
@@ -240,11 +241,49 @@ export const Home = () => {
         }
     }, [isFinished, user, results, difficulty, mode, category, navigate]);
 
+    // Keyboard handler to prevent select-all and restrict bulk deletion
+    const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Block Ctrl+A / Cmd+A (select all)
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+            e.preventDefault();
+            return;
+        }
+
+        // Block Ctrl+Backspace / Cmd+Backspace (delete word) - delete only current word
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Backspace') {
+            e.preventDefault();
+            const minLength = getMinAllowedLength(userInput);
+            if (userInput.length > minLength) {
+                handleInput(userInput.slice(0, minLength));
+                play();
+            }
+            return;
+        }
+
+        // Block regular Backspace if at locked boundary (can't delete past last space)
+        if (e.key === 'Backspace') {
+            const minLength = getMinAllowedLength(userInput);
+            if (userInput.length <= minLength) {
+                e.preventDefault();
+                return;
+            }
+        }
+
+        // Block Delete key entirely (no forward deletion allowed)
+        if (e.key === 'Delete') {
+            e.preventDefault();
+            return;
+        }
+    }, [userInput, handleInput, play]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const now = Date.now();
         lastKeystrokeTimeRef.current = now;
 
-        const val = e.target.value;
+        const rawValue = e.target.value;
+        // Restrict deletion to only allow deleting within current word
+        const val = restrictDeletion(userInput, rawValue);
+
         const oldLength = userInput.length;
         const newLength = val.length;
 
@@ -277,7 +316,7 @@ export const Home = () => {
             play();
         }
 
-        handleInput(e.target.value);
+        handleInput(val);
     };
 
     const focusInput = () => {
@@ -328,6 +367,7 @@ export const Home = () => {
                                     type="text"
                                     value={userInput}
                                     onChange={handleInputChange}
+                                    onKeyDown={handleInputKeyDown}
                                     onFocus={handleInputFocus}
                                     onBlur={handleInputBlur}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
